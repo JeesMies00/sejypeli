@@ -9,86 +9,110 @@ using Jypeli.Widgets;
 public class Koppi : PhysicsGame
 {
     IntMeter pisteLaskuri;
-    IntMeter elamat = new IntMeter(3, 0, 6);
-    int level = 1;
-    int omenoitaIlmassa = 1;
+    IntMeter elamaLaskuri;
+    IntMeter tasoLaskuri;
+    int omenoitaIlmassa;
+    int sata = 100;
+
+    void LuoNaytto(IntMeter laskuri, double x, double y)
+    {
+        Label naytto = new Label();
+        naytto.X = x;
+        naytto.Y = y;
+        naytto.BindTo(laskuri);
+
+        Add(naytto);
+    }
+
+    void PudotaOmenoita(int lukumaara)
+    {
+        for (int i = 0; i < lukumaara; i++)
+        {
+            PhysicsObject omena = new PhysicsObject(80, 80);
+            omena.Shape = Shape.Circle;
+            omena.Color = Color.Red;
+            omena.Y = Screen.Top;
+            omena.Restitution = 0.5;
+            GameObject lehti = new GameObject(30, 30);
+            lehti.Shape = Shape.Star;
+            lehti.Color = Color.Green;
+            lehti.Y = 40;
+            omena.Add(lehti);
+
+            Add(omena);
+
+            omena.Hit(RandomGen.NextVector(50, 100));
+
+            Mouse.ListenOn(omena, MouseButton.Left,
+                ButtonState.Pressed, OmenaaKlikattu,
+                "omenaa klikattu", omena);
+        }
+        omenoitaIlmassa = lukumaara;
+    }
 
     public override void Begin()
     {
-        LuoPisteLaskuri();
-        LuoElamaLaskuri();
-        UusiOmena(level);
-        omenoitaIlmassa = level;
-
-        PhysicsObject pohja = Level.CreateBottomBorder(0.5, true);
-        AddCollisionHandler(pohja, PutosiMaahan);
-        Level.CreateLeftBorder(0.1, false);
-        Level.CreateRightBorder(0.1, false);
-        Gravity = new Vector(0.0, -100.0);
-        Camera.ZoomToLevel(1);
         Level.Background.Color = Color.DarkGreen;
+        Camera.ZoomToLevel();
+        pisteLaskuri = new IntMeter(0);
+        LuoNaytto(pisteLaskuri, Screen.Left + 50, Screen.Top - 50);
+        elamaLaskuri = new IntMeter(5, 0, 5);
+        LuoNaytto(elamaLaskuri, Screen.Right - 50, Screen.Top - 50);
+        tasoLaskuri = new IntMeter(1, 1, 10);
+        LuoNaytto(tasoLaskuri, Screen.Left + 50, Screen.Top - 100);
+
+        PudotaOmenoita(tasoLaskuri.Value);
+        omenoitaIlmassa = tasoLaskuri.Value;
+
+        Level.CreateLeftBorder(0.5, false);
+        Level.CreateRightBorder(0.5, false);
+        PhysicsObject pohja =
+            Level.CreateBottomBorder();
+        AddCollisionHandler(pohja, PutosiMaahan);
+
+        Gravity = new Vector(0.0, -100.0);
         IsMouseVisible = true;
-
-        // TODO: Kirjoita ohjelmakoodisi tähän
-
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
 
+    void PutosiMaahan(
+        PhysicsObject maa,
+        PhysicsObject omena)
+    {
+        if (omena.Color == Color.Red)
+        {
+            omena.Color = Color.Black;
+            elamaLaskuri.AddValue(-1);
+            if (elamaLaskuri.Value == 0)
+            {
+                ClearAll();
+                Begin();
+            }
+
+            omenoitaIlmassa = omenoitaIlmassa - 1;
+            TarkistaOnkoKaikkiKiinni();
+        }
+    }
+
     void OmenaaKlikattu(PhysicsObject klikattuOmena)
     {
-        klikattuOmena.Destroy();
-        pisteLaskuri.AddValue(1);
-        omenoitaIlmassa = omenoitaIlmassa - 1;
+        if (klikattuOmena.Color == Color.Red)
+        {
+            klikattuOmena.Destroy();
+            pisteLaskuri.AddValue(100);
+            omenoitaIlmassa = omenoitaIlmassa - 1;
+
+            TarkistaOnkoKaikkiKiinni();
+        }
     }
 
-    void LuoPisteLaskuri()
+    void TarkistaOnkoKaikkiKiinni()
     {
-        pisteLaskuri = new IntMeter(0);
-        Label pisteNaytto = new Label();
-        pisteNaytto.X = Screen.Left + 100;
-        pisteNaytto.Y = Screen.Top - 100;
-        pisteNaytto.Title = "Pisteet";
-        pisteNaytto.BindTo(pisteLaskuri);
-        Add(pisteNaytto);
-    }
-
-    void PutosiMaahan(PhysicsObject maa, PhysicsObject omena)
-{
-    if (omena.Color != Color.Black)
-    {
-    elamat.AddValue(-1);
-    omena.FadeColorTo(Color.Black, 1);
-    omenoitaIlmassa = omenoitaIlmassa - 1;
-    }
-    
-}
-    void LuoElamaLaskuri()
-    {
-        Label elamaNaytto = new Label();
-        elamaNaytto.BindTo(elamat);
-        elamaNaytto.X =Screen.Right - 100.0;
-        elamaNaytto.Y =Screen.Top - 100.0;
-        elamaNaytto.Title = "Elämät";
-        Add(elamaNaytto);
-    }
-
-    void UusiOmena(int omenoita)
-    {
- PhysicsObject omena = new PhysicsObject(50, 50);
-        omena.Shape = Shape.Circle;
-        omena.Color = Color.Red;
-        GameObject lehti = new GameObject(20, 20);
-        lehti.Shape = Shape.Star;
-        lehti.Color = Color.Green;
-        omena.Restitution = 0.5;
-        omena.Y = 400;
-        Add(omena);
-        lehti.Y = 25;
-        omena.Add(lehti);
-        Mouse.ListenOn(omena, MouseButton.Left, ButtonState.Pressed, OmenaaKlikattu, "omenaa klikattu", omena);
-
-        omena.Hit(RandomGen.NextVector(50, 100));
+        if (omenoitaIlmassa == 0)
+        {
+            tasoLaskuri.AddValue(1);
+            PudotaOmenoita(tasoLaskuri.Value);
+        }
     }
 }
-

@@ -17,6 +17,9 @@ public class pong : PhysicsGame
     PhysicsObject maila1;
     PhysicsObject maila2;
 
+    PhysicsObject vasenReuna;
+    PhysicsObject oikeaReuna;
+
     IntMeter pelaajan1Pisteet;
     IntMeter pelaajan2Pisteet;
 
@@ -40,17 +43,17 @@ public class pong : PhysicsGame
         maila1 = LuoMaila(Level.Left + 20.0, 0.0);
         maila2 = LuoMaila(Level.Right - 20.0, 0.0);
 
-        PhysicsObject vasenReuna = Level.CreateLeftBorder();
+        vasenReuna = Level.CreateLeftBorder();
         vasenReuna.Restitution = 1.0;
         vasenReuna.IsVisible = false;
 
-        PhysicsObject oikeaReuna = Level.CreateRightBorder();
-        vasenReuna.Restitution = 1.0;
-        vasenReuna.IsVisible = false;
+        oikeaReuna = Level.CreateRightBorder();
+        oikeaReuna.Restitution = 1.0;
+        oikeaReuna.IsVisible = false;
 
         PhysicsObject ylaReuna = Level.CreateTopBorder();
-        vasenReuna.Restitution = 1.0;
-        vasenReuna.IsVisible = false;
+        ylaReuna.Restitution = 1.0;
+        ylaReuna.IsVisible = false;
 
         Level.Background.Color = Color.Black;
 
@@ -128,6 +131,14 @@ public class pong : PhysicsGame
     }
     void KasittelePallonTormays(PhysicsObject pallo, PhysicsObject kohde)
     {
-    
+        if (kohde == oikeaReuna)
+        {
+            pelaajan1Pisteet.Value += 1;
+        }
+        else if (kohde == vasenReuna)
+        {
+            pelaajan2Pisteet.Value += 1;
+        }
+
     }
 }
