@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invation of Blobs", "Invation of Blobs\Invation of Blobs\Invation of Blobs.csproj", "{78DAE193-3B05-45C4-9E2A-3AACD6523275}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invation of Blobs", "Invation of Blobs\Invation of Blobs\Invation of Blobs.csproj", "{D975D6D1-8ED6-4848-8E94-DD67E9489225}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "Invation of BlobsContent", "Invation of Blobs\Invation of BlobsContent\Invation of BlobsContent.contentproj", "{72F3A457-14F3-4E19-B14C-CF1BCD58ECBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invation of BlobsContent", "Invation of Blobs\Invation of BlobsContent\Invation of BlobsContent.contentproj", "{330EB3BB-0D62-4518-AECB-6384A11CD1E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{78DAE193-3B05-45C4-9E2A-3AACD6523275}.Debug|x86.ActiveCfg = Debug|x86
-		{78DAE193-3B05-45C4-9E2A-3AACD6523275}.Debug|x86.Build.0 = Debug|x86
-		{78DAE193-3B05-45C4-9E2A-3AACD6523275}.Release|x86.ActiveCfg = Release|x86
-		{78DAE193-3B05-45C4-9E2A-3AACD6523275}.Release|x86.Build.0 = Release|x86
-		{72F3A457-14F3-4E19-B14C-CF1BCD58ECBC}.Debug|x86.ActiveCfg = Debug|x86
-		{72F3A457-14F3-4E19-B14C-CF1BCD58ECBC}.Release|x86.ActiveCfg = Release|x86
+		{D975D6D1-8ED6-4848-8E94-DD67E9489225}.Debug|x86.ActiveCfg = Debug|x86
+		{D975D6D1-8ED6-4848-8E94-DD67E9489225}.Debug|x86.Build.0 = Debug|x86
+		{D975D6D1-8ED6-4848-8E94-DD67E9489225}.Release|x86.ActiveCfg = Release|x86
+		{D975D6D1-8ED6-4848-8E94-DD67E9489225}.Release|x86.Build.0 = Release|x86
+		{330EB3BB-0D62-4518-AECB-6384A11CD1E2}.Debug|x86.ActiveCfg = Debug|x86
+		{330EB3BB-0D62-4518-AECB-6384A11CD1E2}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
