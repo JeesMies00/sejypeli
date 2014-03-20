@@ -9,25 +9,33 @@ using Jypeli.Widgets;
 public class GrazyGreg : PhysicsGame
 {
     PhysicsObject Greg = new PhysicsObject(140, 140);
-    
+    PhysicsObject piikki;
     
     public override void Begin()
     {
         Gravity = new Vector(0.0, -5.0);
         Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
         Mouse.IsCursorVisible = true;
-        Camera.ZoomToLevel(600.0);
-        //Camera.FollowedObject = Greg;
-        
+        LuoKentta();
+        Camera.ZoomToLevel();
+
         Mouse.Listen(MouseButton.Left, ButtonState.Pressed, Hyppy, "Hyppää");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        Keyboard.Listen(Key.R, ButtonState.Pressed, restart, "Aloita alusta");
+
+        AddCollisionHandler(Greg, "kuolema", CollisionHandler.ExplodeObject(500, true));
     }
 
     void LuoKentta()
     {
-        ColorTileMap taso = ColorTileMap.FromLevelAsset("level1");
+        ColorTileMap taso = ColorTileMap.FromLevelAsset("level2");
         taso.SetTileMethod(Color.Black, LuoSeina);
+        taso.SetTileMethod(Color.FromHexCode("FF0000"), LuoPelaaja);
+        taso.SetTileMethod(Color.FromHexCode("FFD800"), LuoLippu);
+        taso.SetTileMethod(Color.FromHexCode("FF5F0F"), LuoPiikki);
+
+        taso.Execute(80, 80);
     }
         
         void Hyppy()
@@ -60,13 +68,30 @@ public class GrazyGreg : PhysicsGame
         }
         void LuoLippu(Vector paikka, double leveys, double korkeus)
         {
-            PhysicsObject ovi = PhysicsObject.CreateStaticObject(leveys, korkeus);
-            ovi.Position = paikka;
-            Image ovenKuva = LoadImage("door");
-            ovi.Image = ovenKuva;
-            ovi.CollisionIgnoreGroup = 1;
-            Add(ovi);
+            PhysicsObject lippu = PhysicsObject.CreateStaticObject(leveys, korkeus);
+            lippu.Position = paikka;
+            Image ovenKuva = LoadImage("flag");
+            lippu.Image = ovenKuva;
+            lippu.CollisionIgnoreGroup = 1;
+            Add(lippu);
         }
+        void LuoPiikki(Vector paikka, double leveys, double korkeus)
+        {
+            piikki = PhysicsObject.CreateStaticObject(leveys, korkeus);
+            piikki.Position = paikka;
+            Image ovenKuva = LoadImage("spike");
+            piikki.Image = ovenKuva;
+            piikki.CollisionIgnoreGroup = 1;
+            piikki.Tag = "kuolema";
+            Add(piikki);
+        }
+        void restart() 
+        {
+            ClearAll();
+            Begin();
+            LuoKentta();
+        }
+
 
 
     }
