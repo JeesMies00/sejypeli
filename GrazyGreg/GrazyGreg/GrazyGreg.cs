@@ -8,15 +8,16 @@ using Jypeli.Widgets;
 
 public class GrazyGreg : PhysicsGame
 {
-    PhysicsObject Greg = new PhysicsObject(140, 140);
+    int kenttaNro = 1;
+    PhysicsObject Greg;
     PhysicsObject piikki;
     
     public override void Begin()
     {
-        Gravity = new Vector(0.0, -5.0);
+        Gravity = new Vector(0.0, -50.0);
         Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
         Mouse.IsCursorVisible = true;
-        LuoKentta();
+        LuoKentta("level1");
         Camera.ZoomToLevel();
 
         Mouse.Listen(MouseButton.Left, ButtonState.Pressed, Hyppy, "Hyppää");
@@ -24,12 +25,43 @@ public class GrazyGreg : PhysicsGame
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.R, ButtonState.Pressed, restart, "Aloita alusta");
 
+        AddCollisionHandler(Greg, "maali", lippuunTormaaminen);
         AddCollisionHandler(Greg, "kuolema", CollisionHandler.ExplodeObject(500, true));
     }
 
-    void LuoKentta()
+    void SeuraavaKentta()
     {
-        ColorTileMap taso = ColorTileMap.FromLevelAsset("level2");
+        ClearAll();
+        if (kenttaNro == 1) LuoKentta("level1");
+        else if (kenttaNro == 2) LuoKentta("level2");
+        else if (kenttaNro == 3) LuoKentta("level3");
+        else if (kenttaNro == 4) LuoKentta("level4");
+        else if (kenttaNro == 5) LuoKentta("level5");
+        else if (kenttaNro == 6) LuoKentta("level6");
+
+        else if (kenttaNro > 6) Exit();
+        Gravity = new Vector(0.0, -50.0);
+        Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
+        Mouse.IsCursorVisible = true;
+
+        Camera.ZoomToLevel();
+
+        Mouse.Listen(MouseButton.Left, ButtonState.Pressed, Hyppy, "Hyppää");
+        PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
+        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        Keyboard.Listen(Key.R, ButtonState.Pressed, restart, "Aloita alusta");
+
+        AddCollisionHandler(Greg, "maali", lippuunTormaaminen);
+        AddCollisionHandler(Greg, "kuolema", CollisionHandler.ExplodeObject(500, true));
+
+        
+    }
+
+    void LuoKentta(string kentannimi)
+    {
+
+
+        ColorTileMap taso = ColorTileMap.FromLevelAsset (kentannimi);
         taso.SetTileMethod(Color.Black, LuoSeina);
         taso.SetTileMethod(Color.FromHexCode("FF0000"), LuoPelaaja);
         taso.SetTileMethod(Color.FromHexCode("FFD800"), LuoLippu);
@@ -60,6 +92,7 @@ public class GrazyGreg : PhysicsGame
         }
         void LuoPelaaja(Vector paikka, double leveys, double korkeus)
         {
+            Greg = new PhysicsObject(140, 140);
             Greg.Position = paikka;
             Image GreginKuva = LoadImage("Greg");
             Greg.AngularVelocity = 2;
@@ -73,6 +106,7 @@ public class GrazyGreg : PhysicsGame
             Image ovenKuva = LoadImage("flag");
             lippu.Image = ovenKuva;
             lippu.CollisionIgnoreGroup = 1;
+            lippu.Tag = "maali";
             Add(lippu);
         }
         void LuoPiikki(Vector paikka, double leveys, double korkeus)
@@ -88,8 +122,13 @@ public class GrazyGreg : PhysicsGame
         void restart() 
         {
             ClearAll();
-            Begin();
-            LuoKentta();
+            SeuraavaKentta();
+        }
+
+        void lippuunTormaaminen(PhysicsObject pelaaja, PhysicsObject kohde)
+        {
+            kenttaNro++;
+            SeuraavaKentta();
         }
 
 
