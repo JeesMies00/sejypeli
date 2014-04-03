@@ -19,11 +19,15 @@ public class GrazyGreg : PhysicsGame
         Mouse.IsCursorVisible = true;
         LuoKentta("level1");
         Camera.ZoomToLevel();
+        MediaPlayer.Play("MidnightSun");
+        MediaPlayer.IsRepeating = true;
+        
 
         Mouse.Listen(MouseButton.Left, ButtonState.Pressed, Hyppy, "Hyppää");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.R, ButtonState.Pressed, restart, "Aloita alusta");
+        Keyboard.Listen(Key.S, ButtonState.Pressed, skip, "Skippaa taso");
 
         AddCollisionHandler(Greg, "maali", lippuunTormaaminen);
         AddCollisionHandler(Greg, "kuolema", CollisionHandler.ExplodeObject(500, true));
@@ -38,8 +42,12 @@ public class GrazyGreg : PhysicsGame
         else if (kenttaNro == 4) LuoKentta("level4");
         else if (kenttaNro == 5) LuoKentta("level5");
         else if (kenttaNro == 6) LuoKentta("level6");
+        else if (kenttaNro == 7) LuoKentta("level7");
+        else if (kenttaNro == 8) LuoKentta("level8");
+        else if (kenttaNro == 9) LuoKentta("levelSaku9000");
 
-        else if (kenttaNro > 6) Exit();
+        else if (kenttaNro > 10) ConfirmExit();
+
         Gravity = new Vector(0.0, -50.0);
         Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
         Mouse.IsCursorVisible = true;
@@ -50,6 +58,7 @@ public class GrazyGreg : PhysicsGame
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.R, ButtonState.Pressed, restart, "Aloita alusta");
+        Keyboard.Listen(Key.S, ButtonState.Pressed, skip, "Skippaa taso");
 
         AddCollisionHandler(Greg, "maali", lippuunTormaaminen);
         AddCollisionHandler(Greg, "kuolema", CollisionHandler.ExplodeObject(500, true));
@@ -68,6 +77,8 @@ public class GrazyGreg : PhysicsGame
         taso.SetTileMethod(Color.FromHexCode("FF5F0F"), LuoPiikki);
 
         taso.Execute(80, 80);
+
+        MessageDisplay.Add("Playing Midnight Sun By DJVI");
     }
         
         void Hyppy()
@@ -80,6 +91,8 @@ public class GrazyGreg : PhysicsGame
 
             Vector impulssi = Vector.FromLengthAndAngle(suunta.Magnitude, suunta.Angle + Angle.FromDegrees(180));
             Greg.Hit(impulssi);
+            SoundEffect hyppyaani = LoadSoundEffect("Jump");
+            hyppyaani.Play();
         }
         void LuoSeina(Vector paikka, double leveys, double korkeus)
         {
@@ -126,6 +139,11 @@ public class GrazyGreg : PhysicsGame
         }
 
         void lippuunTormaaminen(PhysicsObject pelaaja, PhysicsObject kohde)
+        {
+            kenttaNro++;
+            SeuraavaKentta();
+        }
+        void skip()
         {
             kenttaNro++;
             SeuraavaKentta();
