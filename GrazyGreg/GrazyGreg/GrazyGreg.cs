@@ -15,7 +15,7 @@ public class GrazyGreg : PhysicsGame
     public override void Begin()
     {
         Gravity = new Vector(0.0, -50.0);
-        Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
+        Level.Background.CreateGradient(Color.Ruby, Color.Turquoise);
         Mouse.IsCursorVisible = true;
         LuoKentta("level1");
         Camera.ZoomToLevel();
@@ -39,17 +39,23 @@ public class GrazyGreg : PhysicsGame
         if (kenttaNro == 1) LuoKentta("level1");
         else if (kenttaNro == 2) LuoKentta("level2");
         else if (kenttaNro == 3) LuoKentta("level3");
-        else if (kenttaNro == 4) LuoKentta("level4");
+        else if (kenttaNro == 4) LuoKentta("level6");
         else if (kenttaNro == 5) LuoKentta("level5");
-        else if (kenttaNro == 6) LuoKentta("level6");
+        else if (kenttaNro == 6) LuoKentta("level4");
         else if (kenttaNro == 7) LuoKentta("level7");
         else if (kenttaNro == 8) LuoKentta("level8");
-        else if (kenttaNro == 9) LuoKentta("levelSaku9000");
+        else if (kenttaNro == 9) LuoKentta("level9");
+        else if (kenttaNro == 10) LuoKentta("level10");
+        else if (kenttaNro == 11) LuoKentta("level11");
+        else if (kenttaNro == 12) LuoKentta("levelSaku9000");
+        else if (kenttaNro == 13) LuoKentta("level12");
+        else if (kenttaNro == 14) LuoKentta("level13");
 
-        else if (kenttaNro > 10) ConfirmExit();
+
+        else if (kenttaNro > 15) ConfirmExit();
 
         Gravity = new Vector(0.0, -50.0);
-        Level.Background.CreateGradient(Color.GreenYellow, Color.Magenta);
+        Level.Background.CreateGradient(Color.Ruby, Color.Turquoise);
         Mouse.IsCursorVisible = true;
 
         Camera.ZoomToLevel();
@@ -98,7 +104,7 @@ public class GrazyGreg : PhysicsGame
         {
             PhysicsObject seina = PhysicsObject.CreateStaticObject(leveys, korkeus);
             seina.Position = paikka;
-            Image seinanKuva = LoadImage("wall");
+            Image seinanKuva = LoadImage("wall2");
             seina.Image = seinanKuva;
             seina.CollisionIgnoreGroup = 1;
             Add(seina);
