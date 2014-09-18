@@ -9,50 +9,57 @@ using Jypeli.Widgets;
 public class SuperGravitySlime : PhysicsGame
 {
     int tormays = 1;
-    Vector vastaimpulssi = new Vector(0.0, -1000.0);
+    Vector vastaimpulssi = new Vector(0.0, -1500.0);
     Vector impulssi = new Vector(0.0, 1000.0);
     double painovoimaluku = 1.0;
     Vector painovoima2 = new Vector(0.0, 3000.0);
     Vector painovoima = new Vector(0.0, -3000.0);
     PlatformCharacter slime = new PlatformCharacter(70.0, 55.0);
-
+    Image limakuva = LoadImage("slime");
+    Image limakuvaylosalaisin = LoadImage("slimeylosalaisin");
+    Image grass = LoadImage("palikka(1)");
+    Image dirt = LoadImage("palikka2(1)");
+    Image ancientpalikka = LoadImage("eripalikka(1)");
+    Image lippu = LoadImage("loppu(1)");
+    Image piikkiylos = LoadImage("piikkiylös");
+    Image piikkialas = LoadImage("piikkialas");
+    Image piikkioikealle = LoadImage("piikkioikealle");
+    Image piikkivasemmalle = LoadImage("piikkivasemmalle");
+    Image vipukuva = LoadImage("vipu");
     public override void Begin()
     {
-        Gravity = painovoima;
+        
+        LuoKentta();
 
-        slime.Color = Color.Green;
-        slime.Shape = Shape.Circle;
-
-
-        AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, Tormays);
-        Keyboard.Listen(Key.W, ButtonState.Pressed, vaihdaPainovoima, "Vaihda painovoima ylös");
-        Keyboard.Listen(Key.A, ButtonState.Down, liikuvasemmalle, "Liiku vasemmalle");
-        Keyboard.Listen(Key.D, ButtonState.Down, liikuoikealle, "Liiku oikealle");
-        Keyboard.Listen(Key.Space, ButtonState.Down, hyppaa, "Hyppää");
-        PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
-        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        
 
     }
 
     void LuoKentta()
     {
+        Gravity = painovoima;
         ColorTileMap kentta = ColorTileMap.FromLevelAsset("kentta1");
         kentta.SetTileMethod(Color.FromHexCode("#000000"), LuoPalikka);
-        kentta.SetTileMethod(Color.FromHexCode("#040404"), LuoPalikka2);
+        kentta.SetTileMethod(Color.FromHexCode("#404040"), LuoPalikka2);
+        kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoEriPalikka);
+        kentta.SetTileMethod(Color.FromHexCode("#0026FF"), LuoVipu);
         kentta.SetTileMethod(Color.FromHexCode("#FF0000"), LuoYlosPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FF6A00"), LuoAlasPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FFD800"), LuoPelaaja);
         kentta.SetTileMethod(Color.FromHexCode("#7F3300"), LuoVasemmallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#7F0000"), LuoOikeallePiikki);
-
+        kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoKentanLoppu);
+        kentta.SetTileMethod(Color.FromHexCode("#00137F"), LuoSwitchBlock);
         kentta.Execute(60.0, 60.0);
+        Camera.Follow(slime);
+        lisaaOhjaimet();
     }
 
     void hyppaa()
     {
         if (painovoimaluku == 1.0)
         {
-            slime.Jump(1250.0);
+            slime.Jump(1500.0);
         }
         else if (tormays == 1)
         {
@@ -75,13 +82,20 @@ public class SuperGravitySlime : PhysicsGame
     {
         if (painovoimaluku == 1.0)
         {
-            painovoimaluku = 2.0;
-            Gravity = painovoima2;
+            if (tormays == 1)
+            {
+                painovoimaluku = 2.0;
+                tormays = 0;
+                Gravity = painovoima2;
+                slime.Image = limakuvaylosalaisin;
+            }
         }
-        else
+        else if (tormays == 1)
         {
             painovoimaluku = 1.0;
+            tormays = 0;
             Gravity = painovoima;
+            slime.Image = limakuva;
         }
     }
         void Tormays(PhysicsObject tormaaja, PhysicsObject kohde)
@@ -91,6 +105,8 @@ public class SuperGravitySlime : PhysicsGame
 
         void LuoPelaaja(Vector paikka, double leveys, double korkeus)
         {
+            slime.Shape = Shape.Circle;
+            slime.Image = limakuva;
             slime.Position = paikka;
             Add(slime);
         }
@@ -98,7 +114,7 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject palikka = PhysicsObject.CreateStaticObject(leveys, korkeus);
             palikka.Position = paikka;
-            palikka.Color = Color.Green;
+            palikka.Image = grass;
             palikka.CollisionIgnoreGroup = 1;
             Add(palikka);
         }
@@ -106,7 +122,7 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject palikka2 = PhysicsObject.CreateStaticObject(leveys, korkeus);
             palikka2.Position = paikka;
-            palikka2.Color = Color.Brown;
+            palikka2.Image = dirt;
             palikka2.CollisionIgnoreGroup = 1;
             Add(palikka2);
         }
@@ -114,7 +130,7 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject eripalikka = PhysicsObject.CreateStaticObject(leveys, korkeus);
             eripalikka.Position = paikka;
-            eripalikka.Color = Color.Brown;
+            eripalikka.Image = ancientpalikka;
             eripalikka.CollisionIgnoreGroup = 1;
             Add(eripalikka);
         }
@@ -122,7 +138,9 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject loppu = PhysicsObject.CreateStaticObject(leveys, korkeus);
             loppu.Position = paikka;
+            loppu.Image = lippu;
             loppu.Tag = "loppu";
+            loppu.Image = lippu;
             loppu.IgnoresCollisionResponse = true;
             Add(loppu);
         }
@@ -130,7 +148,8 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject YlosPiikki = PhysicsObject.CreateStaticObject(leveys, korkeus);
             YlosPiikki.Position = paikka;
-            YlosPiikki.Shape = Shape.Triangle;
+            YlosPiikki.Image = piikkiylos;
+            YlosPiikki.Tag = "piikki";
             YlosPiikki.CollisionIgnoreGroup = 1;
             Add(YlosPiikki);
         }
@@ -138,7 +157,8 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject AlasPiikki = PhysicsObject.CreateStaticObject(leveys, korkeus);
             AlasPiikki.Position = paikka;
-            AlasPiikki.Shape = Shape.Triangle;
+            AlasPiikki.Image = piikkialas;
+            AlasPiikki.Tag = "piikki";
             AlasPiikki.CollisionIgnoreGroup = 1;
             Add(AlasPiikki);
         }
@@ -146,7 +166,8 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject VasemmallePiikki = PhysicsObject.CreateStaticObject(leveys, korkeus);
             VasemmallePiikki.Position = paikka;
-            VasemmallePiikki.Shape = Shape.Triangle;
+            VasemmallePiikki.Image = piikkivasemmalle;
+            VasemmallePiikki.Tag = "piikki";
             VasemmallePiikki.CollisionIgnoreGroup = 1;
             Add(VasemmallePiikki);
         }
@@ -154,8 +175,45 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject OikeallePiikki = PhysicsObject.CreateStaticObject(leveys, korkeus);
             OikeallePiikki.Position = paikka;
-            OikeallePiikki.Shape = Shape.Triangle;
+            OikeallePiikki.Image = piikkioikealle;
+            OikeallePiikki.Tag = "piikki";
             OikeallePiikki.CollisionIgnoreGroup = 1;
             Add(OikeallePiikki);
         }
+        void Kuolema(PhysicsObject tormaaja, PhysicsObject kohde)
+        {
+            //ClearAll();
+            //LuoKentta();
+
+        }
+        void lisaaOhjaimet()
+        {
+            AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, "piikki", Kuolema);
+            AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, Tormays);
+            Keyboard.Listen(Key.W, ButtonState.Pressed, vaihdaPainovoima, "Vaihda painovoima ylös");
+            Keyboard.Listen(Key.A, ButtonState.Down, liikuvasemmalle, "Liiku vasemmalle");
+            Keyboard.Listen(Key.D, ButtonState.Down, liikuoikealle, "Liiku oikealle");
+            Keyboard.Listen(Key.Space, ButtonState.Down, hyppaa, "Hyppää");
+            PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
+            Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        }
+        void LuoVipu(Vector paikka, double leveys, double korkeus)
+        {
+            PhysicsObject vipu = PhysicsObject.CreateStaticObject(leveys, korkeus);
+            vipu.Position = paikka;
+            vipu.Image = vipukuva;
+            vipu.Tag = "vipu";
+            vipu.IgnoresCollisionResponse = true;
+            Add(vipu);
+        }
+        void LuoSwitchBlock(Vector paikka, double leveys, double korkeus)
+        {
+            PhysicsObject SwitchBlock = PhysicsObject.CreateStaticObject(leveys, korkeus);
+            SwitchBlock.Position = paikka;
+            //SwitchBlock.Image = ?;
+            SwitchBlock.CollisionIgnoreGroup = 1;
+            Add(SwitchBlock);
+        }
+
+
 }
