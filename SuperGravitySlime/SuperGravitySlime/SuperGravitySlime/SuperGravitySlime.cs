@@ -8,6 +8,7 @@ using Jypeli.Widgets;
 
 public class SuperGravitySlime : PhysicsGame
 {
+    PhysicsObject gravitypalikka = PhysicsObject.CreateStaticObject(60, 60);
     int tormays = 1;
     Vector vastaimpulssi = new Vector(0.0, -1500.0);
     Vector impulssi = new Vector(0.0, 1000.0);
@@ -25,7 +26,6 @@ public class SuperGravitySlime : PhysicsGame
     Image piikkialas = LoadImage("piikkialas");
     Image piikkioikealle = LoadImage("piikkioikealle");
     Image piikkivasemmalle = LoadImage("piikkivasemmalle");
-    Image vipukuva = LoadImage("vipu");
     public override void Begin()
     {
         
@@ -42,14 +42,13 @@ public class SuperGravitySlime : PhysicsGame
         kentta.SetTileMethod(Color.FromHexCode("#000000"), LuoPalikka);
         kentta.SetTileMethod(Color.FromHexCode("#404040"), LuoPalikka2);
         kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoEriPalikka);
-        kentta.SetTileMethod(Color.FromHexCode("#0026FF"), LuoVipu);
         kentta.SetTileMethod(Color.FromHexCode("#FF0000"), LuoYlosPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FF6A00"), LuoAlasPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FFD800"), LuoPelaaja);
         kentta.SetTileMethod(Color.FromHexCode("#7F3300"), LuoVasemmallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#7F0000"), LuoOikeallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoKentanLoppu);
-        kentta.SetTileMethod(Color.FromHexCode("#00137F"), LuoSwitchBlock);
+        kentta.SetTileMethod(Color.FromHexCode("#00137F"), LuoGravityPalikka);
         kentta.Execute(60.0, 60.0);
         Camera.Follow(slime);
         lisaaOhjaimet();
@@ -88,6 +87,7 @@ public class SuperGravitySlime : PhysicsGame
                 tormays = 0;
                 Gravity = painovoima2;
                 slime.Image = limakuvaylosalaisin;
+                gravitypalikka.Move(painovoima2);
             }
         }
         else if (tormays == 1)
@@ -197,22 +197,13 @@ public class SuperGravitySlime : PhysicsGame
             PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         }
-        void LuoVipu(Vector paikka, double leveys, double korkeus)
+        void LuoGravityPalikka(Vector paikka, double leveys, double korkeus)
         {
-            PhysicsObject vipu = PhysicsObject.CreateStaticObject(leveys, korkeus);
-            vipu.Position = paikka;
-            vipu.Image = vipukuva;
-            vipu.Tag = "vipu";
-            vipu.IgnoresCollisionResponse = true;
-            Add(vipu);
-        }
-        void LuoSwitchBlock(Vector paikka, double leveys, double korkeus)
-        {
-            PhysicsObject SwitchBlock = PhysicsObject.CreateStaticObject(leveys, korkeus);
-            SwitchBlock.Position = paikka;
-            //SwitchBlock.Image = ?;
-            SwitchBlock.CollisionIgnoreGroup = 1;
-            Add(SwitchBlock);
+            
+            gravitypalikka.Position = paikka;
+            gravitypalikka.Color = Color.Beige;
+            gravitypalikka.CollisionIgnoreGroup = 1;
+            Add(gravitypalikka);
         }
 
 
