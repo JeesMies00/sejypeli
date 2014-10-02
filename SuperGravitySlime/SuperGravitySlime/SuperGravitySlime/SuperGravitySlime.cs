@@ -8,14 +8,13 @@ using Jypeli.Widgets;
 
 public class SuperGravitySlime : PhysicsGame
 {
-    PhysicsObject gravitypalikka = PhysicsObject.CreateStaticObject(60, 60);
     int tormays = 1;
     Vector vastaimpulssi = new Vector(0.0, -1500.0);
     Vector impulssi = new Vector(0.0, 1000.0);
     double painovoimaluku = 1.0;
     Vector painovoima2 = new Vector(0.0, 3000.0);
     Vector painovoima = new Vector(0.0, -3000.0);
-    PlatformCharacter slime = new PlatformCharacter(70.0, 55.0);
+    PlatformCharacter slime = new PlatformCharacter(65, 60);
     Image limakuva = LoadImage("slime");
     Image limakuvaylosalaisin = LoadImage("slimeylosalaisin");
     Image grass = LoadImage("palikka(1)");
@@ -41,14 +40,13 @@ public class SuperGravitySlime : PhysicsGame
         ColorTileMap kentta = ColorTileMap.FromLevelAsset("kentta1");
         kentta.SetTileMethod(Color.FromHexCode("#000000"), LuoPalikka);
         kentta.SetTileMethod(Color.FromHexCode("#404040"), LuoPalikka2);
-        kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoEriPalikka);
+        kentta.SetTileMethod(Color.FromHexCode("#0094FF"), LuoEriPalikka);
         kentta.SetTileMethod(Color.FromHexCode("#FF0000"), LuoYlosPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FF6A00"), LuoAlasPiikki);
         kentta.SetTileMethod(Color.FromHexCode("#FFD800"), LuoPelaaja);
         kentta.SetTileMethod(Color.FromHexCode("#7F3300"), LuoVasemmallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#7F0000"), LuoOikeallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#123456"), LuoKentanLoppu);
-        kentta.SetTileMethod(Color.FromHexCode("#00137F"), LuoGravityPalikka);
         kentta.Execute(60.0, 60.0);
         Camera.Follow(slime);
         lisaaOhjaimet();
@@ -58,7 +56,7 @@ public class SuperGravitySlime : PhysicsGame
     {
         if (painovoimaluku == 1.0)
         {
-            slime.Jump(1500.0);
+            slime.Jump(1500);
         }
         else if (tormays == 1)
         {
@@ -87,7 +85,6 @@ public class SuperGravitySlime : PhysicsGame
                 tormays = 0;
                 Gravity = painovoima2;
                 slime.Image = limakuvaylosalaisin;
-                gravitypalikka.Move(painovoima2);
             }
         }
         else if (tormays == 1)
@@ -197,14 +194,4 @@ public class SuperGravitySlime : PhysicsGame
             PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         }
-        void LuoGravityPalikka(Vector paikka, double leveys, double korkeus)
-        {
-            
-            gravitypalikka.Position = paikka;
-            gravitypalikka.Color = Color.Beige;
-            gravitypalikka.CollisionIgnoreGroup = 1;
-            Add(gravitypalikka);
-        }
-
-
 }
