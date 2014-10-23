@@ -27,6 +27,7 @@ public class SuperGravitySlime : PhysicsGame
     Image piikkialas = LoadImage("piikkialas");
     Image piikkioikealle = LoadImage("piikkioikealle");
     Image piikkivasemmalle = LoadImage("piikkivasemmalle");
+    Image sininenRinkula = LoadImage("antigravitationBlock");
     public override void Begin()
     {
         
@@ -38,7 +39,12 @@ public class SuperGravitySlime : PhysicsGame
 
     void SeuraavaKentta()
     {
-        if (kenttanro == 1) LuoKentta("kentta1");
+        ClearAll();
+        
+        if (kenttanro == 1) LuoKentta("kentta3");
+        else if (kenttanro == 2) Exit();
+        lisaaOhjaimet();
+        
     }
     void LuoKentta(string kentannimi)
     {
@@ -54,9 +60,9 @@ public class SuperGravitySlime : PhysicsGame
         kentta.SetTileMethod(Color.FromHexCode("#7F3300"), LuoVasemmallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#7F0000"), LuoOikeallePiikki);
         kentta.SetTileMethod(Color.FromHexCode("#B200FF"), LuoKentanLoppu);
+        kentta.SetTileMethod(Color.FromHexCode("#00FFFF"), LuoAntiGravitaatioBlock);
         kentta.Execute(60.0, 60.0);
 
-        //AddCollisionHandler(slime, "loppu", Loppu);
         Camera.Follow(slime);
         lisaaOhjaimet();
     }
@@ -65,7 +71,7 @@ public class SuperGravitySlime : PhysicsGame
     {
         if (painovoimaluku == 1.0)
         {
-            slime.Jump(1500);
+            slime.Jump(750);
         }
         else if (tormays == 1)
         {
@@ -196,9 +202,17 @@ public class SuperGravitySlime : PhysicsGame
             OikeallePiikki.CollisionIgnoreGroup = 1;
             Add(OikeallePiikki);
         }
+        void LuoAntiGravitaatioBlock(Vector paikka, double leveys, double korkeus)
+        {
+            PhysicsObject AntiGravitaatioBlock = PhysicsObject.CreateStaticObject(leveys, korkeus);
+            AntiGravitaatioBlock.Position = paikka;
+            AntiGravitaatioBlock.Image = sininenRinkula;
+            AntiGravitaatioBlock.IgnoresCollisionResponse = true;
+            Add(AntiGravitaatioBlock);
+        }
         void Kuolema(PhysicsObject tormaaja, PhysicsObject kohde)
         {
-            slime.Destroy();
+            //slime.Destroy();
         }
         void lisaaOhjaimet()
         {
@@ -212,7 +226,7 @@ public class SuperGravitySlime : PhysicsGame
         }
         void Aloitaalusta()
         {
-            ClearAll();
+            SeuraavaKentta();
         
         }
         void Loppu()
