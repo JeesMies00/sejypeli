@@ -15,14 +15,22 @@ public class SuperGravitySlime : PhysicsGame
     double painovoimaluku = 1.0;
     Vector painovoima2 = new Vector(0.0, 3000.0);
     Vector painovoima = new Vector(0.0, -3000.0);
-    PlatformCharacter slime = new PlatformCharacter(65, 60);
+    PlatformCharacter slime;
     Image limakuva = LoadImage("slime");
     Image limakuvaylosalaisin = LoadImage("slimeylosalaisin");
     Image grass = LoadImage("palikka(1)");
+    Image pilvi = LoadImage("palikka(2)");
+    Image pilviovi = LoadImage("loppu(2)");
     Image grassvaarinpain = LoadImage("palikkavaarinpain(1)");
     Image dirt = LoadImage("palikka2(1)");
+    Image avaruuspalikka = LoadImage("palikka(3)");
+    Image avaruuspalikka2 = LoadImage("palikka2(3)");
+    Image avaruusovi = LoadImage("loppu(3)");
+    Image avaruuspalikkavaarinpain = LoadImage("palikkavaarinpain(3)");
+    Image avaruuseripalikka = LoadImage("eripalikka(3)");
     Image ancientpalikka = LoadImage("eripalikka(1)");
-    Image lippu = LoadImage("loppu(1)");
+    Image ancientpalikka2 = LoadImage("eripalikka(2)");
+    Image puuovi = LoadImage("loppu(1)");
     Image piikkiylos = LoadImage("piikkiylös");
     Image piikkialas = LoadImage("piikkialas");
     Image piikkioikealle = LoadImage("piikkioikealle");
@@ -30,19 +38,18 @@ public class SuperGravitySlime : PhysicsGame
     Image sininenRinkula = LoadImage("antigravitationBlock");
     public override void Begin()
     {
-        
         SeuraavaKentta();
-
-        
-
     }
 
     void SeuraavaKentta()
     {
         ClearAll();
         
-        if (kenttanro == 1) LuoKentta("kentta3");
-        else if (kenttanro == 2) Exit();
+        if (kenttanro == 1) LuoKentta("kentta1");
+        else if (kenttanro == 2) LuoKentta("kentta2");
+        else if (kenttanro == 3) LuoKentta("kentta3");
+        //if (kenttanro == 4) LuoKentta("kentta1");
+        else if (kenttanro == 4) Exit();
         lisaaOhjaimet();
         
     }
@@ -62,9 +69,25 @@ public class SuperGravitySlime : PhysicsGame
         kentta.SetTileMethod(Color.FromHexCode("#B200FF"), LuoKentanLoppu);
         kentta.SetTileMethod(Color.FromHexCode("#00FFFF"), LuoAntiGravitaatioBlock);
         kentta.Execute(60.0, 60.0);
-
+            AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, "loppu", Loppu);
+            AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, "piikki", Kuolema);
         Camera.Follow(slime);
-        lisaaOhjaimet();
+        if (kenttanro == 1)
+        {
+            MediaPlayer.Play("plains");
+        }
+        else if (kenttanro == 2)
+        {
+            MediaPlayer.Play("heaven");
+        }
+        else if (kenttanro == 3)
+        {
+            MediaPlayer.Play("space");
+        }
+        else if (kenttanro == 4)
+        {
+            MediaPlayer.Play("hell");
+        }
     }
 
     void hyppaa()
@@ -117,26 +140,57 @@ public class SuperGravitySlime : PhysicsGame
 
         void LuoPelaaja(Vector paikka, double leveys, double korkeus)
         {
+            slime = new PlatformCharacter(65, 60);
             slime.Shape = Shape.Circle;
             slime.Image = limakuva;
             slime.Position = paikka;
-            AddCollisionHandler(slime, "piikki", Kuolema);
-            AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, Tormays);
+                AddCollisionHandler<PlatformCharacter, PhysicsObject>(slime, Tormays);
             Add(slime);
         }
         void LuoPalikka(Vector paikka, double leveys, double korkeus)
         {
             PhysicsObject palikka = PhysicsObject.CreateStaticObject(leveys, korkeus);
             palikka.Position = paikka;
-            palikka.Image = grass;
+            if (kenttanro == 1)
+            {
+                palikka.Image = grass;
+            }
+            else if (kenttanro == 2)
+            {
+                palikka.Image = pilvi;
+            }
+            else if (kenttanro == 3)
+            {
+                palikka.Image = avaruuspalikka;
+            }
+            else if (kenttanro == 4)
+            {
+                palikka.Image = pilvi;
+            }
             palikka.CollisionIgnoreGroup = 1;
+            
             Add(palikka);
         }
         void LuoPalikkaVaarinpain(Vector paikka, double leveys, double korkeus)
         {
             PhysicsObject palikkaVaarinpain = PhysicsObject.CreateStaticObject(leveys, korkeus);
             palikkaVaarinpain.Position = paikka;
-            palikkaVaarinpain.Image = grassvaarinpain;
+            if (kenttanro == 1)
+            {
+                palikkaVaarinpain.Image = grassvaarinpain;
+            }
+            else if (kenttanro == 2)
+            {
+                palikkaVaarinpain.Image = pilvi;
+            }
+            else if (kenttanro == 3)
+            {
+                palikkaVaarinpain.Image = avaruuspalikkavaarinpain;
+            }
+            else if (kenttanro == 4)
+            {
+                palikkaVaarinpain.Image = pilvi;
+            }
             palikkaVaarinpain.CollisionIgnoreGroup = 1;
             Add(palikkaVaarinpain);
         }
@@ -144,7 +198,22 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject palikka2 = PhysicsObject.CreateStaticObject(leveys, korkeus);
             palikka2.Position = paikka;
-            palikka2.Image = dirt;
+            if (kenttanro == 1)
+            {
+                palikka2.Image = dirt;
+            }
+            else if (kenttanro == 2)
+            {
+                palikka2.Image = pilvi;
+            }
+            else if (kenttanro == 3)
+            {
+                palikka2.Image = avaruuspalikka2;
+            }
+            else if (kenttanro == 4)
+            {
+                palikka2.Image = pilvi;
+            }
             palikka2.CollisionIgnoreGroup = 1;
             Add(palikka2);
         }
@@ -152,7 +221,22 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject eripalikka = PhysicsObject.CreateStaticObject(leveys, korkeus);
             eripalikka.Position = paikka;
-            eripalikka.Image = ancientpalikka;
+            if (kenttanro == 1)
+            {
+                eripalikka.Image = ancientpalikka;
+            }
+            else if (kenttanro == 2)
+            {
+                eripalikka.Image = ancientpalikka2;
+            }
+            else if (kenttanro == 3)
+            {
+                eripalikka.Image = avaruuseripalikka;
+            }
+            else if (kenttanro == 4)
+            {
+                eripalikka.Image = pilvi;
+            }
             eripalikka.CollisionIgnoreGroup = 1;
             Add(eripalikka);
         }
@@ -160,9 +244,23 @@ public class SuperGravitySlime : PhysicsGame
         {
             PhysicsObject loppu = PhysicsObject.CreateStaticObject(leveys, korkeus);
             loppu.Position = paikka;
-            loppu.Image = lippu;
+            if (kenttanro == 1)
+            {
+                loppu.Image = puuovi;
+            }
+            else if (kenttanro == 2)
+            {
+                loppu.Image = pilviovi;
+            }
+            else if (kenttanro == 3)
+            {
+                loppu.Image = avaruusovi;
+            }
+            else if (kenttanro == 4)
+            {
+                loppu.Image = pilvi;
+            }
             loppu.Tag = "loppu";
-            loppu.Image = lippu;
             loppu.IgnoresCollisionResponse = true;
             Add(loppu);
         }
@@ -213,9 +311,12 @@ public class SuperGravitySlime : PhysicsGame
         void Kuolema(PhysicsObject tormaaja, PhysicsObject kohde)
         {
             //slime.Destroy();
+
+            //painovoimaluku = 1;
         }
         void lisaaOhjaimet()
         {
+            Keyboard.Listen(Key.T, ButtonState.Pressed, Skip, "Ohita taso");
             Keyboard.Listen(Key.R, ButtonState.Pressed, Aloitaalusta, "Aloita alusta");
             Keyboard.Listen(Key.W, ButtonState.Pressed, vaihdaPainovoima, "Vaihda painovoima ylös");
             Keyboard.Listen(Key.A, ButtonState.Down, liikuvasemmalle, "Liiku vasemmalle");
@@ -229,8 +330,15 @@ public class SuperGravitySlime : PhysicsGame
             SeuraavaKentta();
         
         }
-        void Loppu()
+        void Loppu(PhysicsObject tormaaja, PhysicsObject kohde)
         {
+            ClearAll();
+            kenttanro++;
+            SeuraavaKentta();
+        }
+        void Skip()
+        {
+            ClearAll();
             kenttanro++;
             SeuraavaKentta();
         }
