@@ -8,6 +8,7 @@ using Jypeli.Widgets;
 
 public class SuperGravitySlime : PhysicsGame
 {
+    int godMode = 0;
     int kenttanro = 1; 
     int tormays = 1;
     Vector vastaimpulssi = new Vector(0.0, -1500.0);
@@ -16,9 +17,16 @@ public class SuperGravitySlime : PhysicsGame
     Vector painovoima2 = new Vector(0.0, 3000.0);
     Vector painovoima = new Vector(0.0, -3000.0);
     PlatformCharacter slime;
+    Image pilvivaarinpain = LoadImage("palikkavaarinpain(2)");
     Image limakuva = LoadImage("slime");
+    Image hellgrass = LoadImage("palikka(4)");
+    Image hellgrassvaarinpain = LoadImage("palikkavaarinpain(4)");
+    Image hellblock = LoadImage("eripalikka(4)");
+    Image helldoor = LoadImage("loppu(4)");
+    Image helldirt = LoadImage("palikka2(4)");
     Image limakuvaylosalaisin = LoadImage("slimeylosalaisin");
     Image grass = LoadImage("palikka(1)");
+    Image pilvi2 = LoadImage("palikka2(2)");
     Image pilvi = LoadImage("palikka(2)");
     Image pilviovi = LoadImage("loppu(2)");
     Image grassvaarinpain = LoadImage("palikkavaarinpain(1)");
@@ -38,18 +46,24 @@ public class SuperGravitySlime : PhysicsGame
     Image sininenRinkula = LoadImage("antigravitationBlock");
     public override void Begin()
     {
-        SeuraavaKentta();
+        MultiSelectWindow alkuValikko = new MultiSelectWindow("", "Taso 1", "Taso 2", "Taso 3", "Taso 4", "Lopeta peli");
+        Add(alkuValikko);
+        alkuValikko.AddItemHandler(0, SeuraavaKentta);
+        alkuValikko.AddItemHandler(1, SkipToLevel2);
+        alkuValikko.AddItemHandler(2, SkipToLevel3);
+        alkuValikko.AddItemHandler(3, SkipToLevel4);
+        alkuValikko.AddItemHandler(4, Exit);
     }
 
     void SeuraavaKentta()
     {
         ClearAll();
-        
+
         if (kenttanro == 1) LuoKentta("kentta1");
         else if (kenttanro == 2) LuoKentta("kentta2");
         else if (kenttanro == 3) LuoKentta("kentta3");
-        //if (kenttanro == 4) LuoKentta("kentta1");
-        else if (kenttanro == 4) Exit();
+        else if (kenttanro == 4) LuoKentta("kentta4");
+        else if (kenttanro == 5) MessageDisplay.Add("YOU WIN!");
         lisaaOhjaimet();
         
     }
@@ -87,6 +101,22 @@ public class SuperGravitySlime : PhysicsGame
         else if (kenttanro == 4)
         {
             MediaPlayer.Play("hell");
+        }
+        if (kenttanro == 1)
+        {
+            Level.Background.CreateGradient(Color.Aqua, Color.Blue);
+        }
+        else if (kenttanro == 2)
+        {
+            Level.Background.CreateGradient(Color.Pink, Color.White);
+        } 
+        else if (kenttanro == 3)
+        {
+            Level.Background.CreateStars();
+        } 
+        else if (kenttanro == 4)
+        {
+            Level.Background.CreateGradient(Color.Red, Color.BloodRed);
         }
     }
 
@@ -165,7 +195,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 4)
             {
-                palikka.Image = pilvi;
+                palikka.Image = hellgrass;
             }
             palikka.CollisionIgnoreGroup = 1;
             
@@ -181,7 +211,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 2)
             {
-                palikkaVaarinpain.Image = pilvi;
+                palikkaVaarinpain.Image = pilvivaarinpain;
             }
             else if (kenttanro == 3)
             {
@@ -189,7 +219,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 4)
             {
-                palikkaVaarinpain.Image = pilvi;
+                palikkaVaarinpain.Image = hellgrassvaarinpain;
             }
             palikkaVaarinpain.CollisionIgnoreGroup = 1;
             Add(palikkaVaarinpain);
@@ -204,7 +234,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 2)
             {
-                palikka2.Image = pilvi;
+                palikka2.Image = pilvi2;
             }
             else if (kenttanro == 3)
             {
@@ -212,7 +242,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 4)
             {
-                palikka2.Image = pilvi;
+                palikka2.Image = helldirt;
             }
             palikka2.CollisionIgnoreGroup = 1;
             Add(palikka2);
@@ -235,7 +265,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 4)
             {
-                eripalikka.Image = pilvi;
+                eripalikka.Image = hellblock;
             }
             eripalikka.CollisionIgnoreGroup = 1;
             Add(eripalikka);
@@ -258,7 +288,7 @@ public class SuperGravitySlime : PhysicsGame
             }
             else if (kenttanro == 4)
             {
-                loppu.Image = pilvi;
+                loppu.Image = helldoor;
             }
             loppu.Tag = "loppu";
             loppu.IgnoresCollisionResponse = true;
@@ -310,13 +340,16 @@ public class SuperGravitySlime : PhysicsGame
         }
         void Kuolema(PhysicsObject tormaaja, PhysicsObject kohde)
         {
-            //slime.Destroy();
-
-            //painovoimaluku = 1;
+            if (godMode == 0)
+            {
+                slime.Destroy();
+                painovoimaluku = 1;
+            }
         }
         void lisaaOhjaimet()
         {
             Keyboard.Listen(Key.T, ButtonState.Pressed, Skip, "Ohita taso");
+            Keyboard.Listen(Key.G, ButtonState.Pressed, GodMode, "Muutu kuolemattomaksi");
             Keyboard.Listen(Key.R, ButtonState.Pressed, Aloitaalusta, "Aloita alusta");
             Keyboard.Listen(Key.W, ButtonState.Pressed, vaihdaPainovoima, "Vaihda painovoima ylös");
             Keyboard.Listen(Key.A, ButtonState.Down, liikuvasemmalle, "Liiku vasemmalle");
@@ -341,5 +374,36 @@ public class SuperGravitySlime : PhysicsGame
             ClearAll();
             kenttanro++;
             SeuraavaKentta();
+        }
+        void SkipToLevel2()
+        {
+            ClearAll();
+            kenttanro = 2;
+            SeuraavaKentta();
+        }
+        void SkipToLevel3()
+        {
+            ClearAll();
+            kenttanro = 3;
+            SeuraavaKentta();
+        }
+        void SkipToLevel4()
+        {
+            ClearAll();
+            kenttanro = 4;
+            SeuraavaKentta();
+        }
+        void GodMode()
+        {
+            if (godMode == 0)
+            {
+                godMode = 1;
+                MessageDisplay.Add("Godmode ON");
+            }
+            else if (godMode == 1)
+            {
+                godMode = 0;
+                MessageDisplay.Add("Godmode OFF");
+            }
         }
 }
