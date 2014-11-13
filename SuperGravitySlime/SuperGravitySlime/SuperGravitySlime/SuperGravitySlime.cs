@@ -17,6 +17,7 @@ public class SuperGravitySlime : PhysicsGame
     Vector painovoima2 = new Vector(0.0, 3000.0);
     Vector painovoima = new Vector(0.0, -3000.0);
     PlatformCharacter slime;
+    Image titleKuva = LoadImage("title");
     Image pilvivaarinpain = LoadImage("palikkavaarinpain(2)");
     Image limakuva = LoadImage("slime");
     Image hellgrass = LoadImage("palikka(4)");
@@ -53,6 +54,11 @@ public class SuperGravitySlime : PhysicsGame
         alkuValikko.AddItemHandler(2, SkipToLevel3);
         alkuValikko.AddItemHandler(3, SkipToLevel4);
         alkuValikko.AddItemHandler(4, Exit);
+        PhysicsObject titleImage = new PhysicsObject(1500, 175);
+        titleImage.Image = titleKuva;
+        titleImage.Y = 350;
+        Add(titleImage);
+        Level.Background.CreateGradient(Color.Aqua, Color.Blue);
     }
 
     void SeuraavaKentta()
