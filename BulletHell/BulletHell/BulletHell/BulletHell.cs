@@ -8,7 +8,7 @@ using Jypeli.Widgets;
 
 public class BulletHell : PhysicsGame
 {
-    PhysicsObject ammus;
+    //PhysicsObject ammus = new PhysicsObject(10,10);
     PhysicsObject pelaaja = new PhysicsObject(30, 30);
     PhysicsObject bullet = new PhysicsObject(10, 10);
     Vector oikealle = new Vector(300, 0);
@@ -20,10 +20,12 @@ public class BulletHell : PhysicsGame
     Image vihollisenKuva = LoadImage("silmapallot");
     Image damageKuva = LoadImage("silmapallot(damaged)");
     Image normalBulletKuva = LoadImage("normalBullet");
+    Image homingBulletKuva = LoadImage("homingBullet");
     AssaultRifle pelaajanAse;
     PhysicsObject vihollinen;
     Timer luotiAjastin = new Timer();
     Timer damageKuvanAjastin = new Timer();
+    
     DoubleMeter elamalaskuri;
     PhysicsObject normalBullet1 = new PhysicsObject(20, 20);
     PhysicsObject normalBullet2 = new PhysicsObject(20, 20);
@@ -41,7 +43,11 @@ public class BulletHell : PhysicsGame
     PhysicsObject normalBullet14 = new PhysicsObject(20, 20);
     PhysicsObject normalBullet15 = new PhysicsObject(20, 20);
     PhysicsObject normalBullet16 = new PhysicsObject(20, 20);
-    Vector luodinNopeus = new Vector(-10000, 0);
+
+    PhysicsObject homingBullet = new PhysicsObject(200, 200);
+
+    Vector luodinNopeusNormaali = new Vector(-150, 0);
+    Vector luodinNopeusNopea = new Vector(-300, 0);
     TimeSpan luodinAika = new TimeSpan(100);
     
 
@@ -65,6 +71,8 @@ public class BulletHell : PhysicsGame
         Keyboard.Listen(Key.Enter, ButtonState.Down, ammu, "Ammu", pelaajanAse);
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+
+
 
         normalBullet1.X = 260;
         normalBullet2.X = 260;
@@ -115,9 +123,35 @@ public class BulletHell : PhysicsGame
         normalBullet15.Image = normalBulletKuva;
         normalBullet16.Image = normalBulletKuva;
 
-        teeHyokkays();
-        hyokkays1();
+        normalBullet1.Tag = "luoti";
+        normalBullet2.Tag = "luoti";
+        normalBullet3.Tag = "luoti";
+        normalBullet4.Tag = "luoti";
+        normalBullet5.Tag = "luoti";
+        normalBullet6.Tag = "luoti";
+        normalBullet7.Tag = "luoti";
+        normalBullet8.Tag = "luoti";
+        normalBullet9.Tag = "luoti";
+        normalBullet10.Tag = "luoti";
+        normalBullet11.Tag = "luoti";
+        normalBullet12.Tag = "luoti";
+        normalBullet13.Tag = "luoti";
+        normalBullet14.Tag = "luoti";
+        normalBullet15.Tag = "luoti";
+        normalBullet16.Tag = "luoti";
+
+        homingBullet.X = 170;
+        homingBullet.Y = 10;
+        homingBullet.Image = homingBulletKuva;
+        FollowerBrain homingAivot = new FollowerBrain(pelaaja);
+        homingBullet.CanRotate = false;
+        homingBullet.Brain = homingAivot;
         
+
+        //teeHyokkays();
+        hyokkays1();
+        //hyokkays2();
+        //hyokkays3();
     }
 
 
@@ -132,6 +166,7 @@ public class BulletHell : PhysicsGame
         
         Camera.ZoomToLevel();
         Level.Background.CreateStars();
+        
     }
 
     void luoPelaaja(Vector paikka, double leveys, double korkeus)
@@ -178,8 +213,50 @@ public class BulletHell : PhysicsGame
 
     void ammu(AssaultRifle ase)
     {
+        PhysicsObject ammus = new PhysicsObject(10, 10);
         ammus = ase.Shoot();
+        
         //ammus.IgnoresCollisionWith(normalBullet1);
+        pelaaja.IgnoresCollisionResponse = true;
+        if (ammus != null)
+        {
+            Add(ammus);
+            ammus.IgnoresCollisionResponse = true;
+            homingBullet.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(homingBullet);
+            normalBullet1.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet1);
+            normalBullet2.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet2);
+            normalBullet3.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet3);
+            normalBullet4.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet4);
+            normalBullet5.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet5);
+            normalBullet6.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet6);
+            normalBullet7.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet7);
+            normalBullet8.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet8);
+            normalBullet9.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet9);
+            normalBullet10.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet10);
+            normalBullet11.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet11);
+            normalBullet12.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet12);
+            normalBullet13.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet13);
+            normalBullet14.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet14);
+            normalBullet15.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet15);
+            normalBullet16.IgnoresCollisionWith(ammus);
+            ammus.IgnoresCollisionWith(normalBullet16);
+        }
     }
 
     void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
@@ -220,51 +297,156 @@ public class BulletHell : PhysicsGame
         vihollinen.Destroy();
     }
 
+    void tuhoaLuoti()
+    { 
+    
+    }
+
     void teeHyokkays()
     {
         int hyokkaysLuku = RandomGen.NextInt(1, 6);
         if (hyokkaysLuku == 1)
         {
-            
+            hyokkays1();
         }
         if (hyokkaysLuku == 2)
         {
-
+            hyokkays2();
         }
         if (hyokkaysLuku == 3)
         {
-
+            hyokkays3();
         }
         if (hyokkaysLuku == 4)
         {
-
+            hyokkays4();
         }
         if (hyokkaysLuku == 5)
         {
-
+            hyokkays5();
         }
     }
 
     void hyokkays1()
     {
-       
-        Add(normalBullet1);
-        Add(normalBullet4);
-        normalBullet1.Push(luodinNopeus, luodinAika);
-        normalBullet4.Push(luodinNopeus, luodinAika);
-        Add(normalBullet2);
-        Add(normalBullet5);
-        
+        Add(homingBullet);
     }
 
     void hyokkays2()
     {
-
+        //cluster
+        Timer.SingleShot(1.0, laukaiseNormalBullet5);
+        Timer.SingleShot(1.0, laukaiseNormalBullet10);
+        Timer.SingleShot(2.0, laukaiseNormalBullet12);
+        Timer.SingleShot(2.0, laukaiseNormalBullet7);
+        Timer.SingleShot(2.0, laukaiseNormalBullet3);
+        Timer.SingleShot(3.0, laukaiseNormalBullet1);
+        Timer.SingleShot(3.0, laukaiseNormalBullet8);
+        Timer.SingleShot(3.0, laukaiseNormalBullet16);
+        Timer.SingleShot(3.5, laukaiseNormalBullet13);
+        Timer.SingleShot(3.5, laukaiseNormalBullet4);
+        Timer.SingleShot(4.0, laukaiseNormalBullet6);
+        Timer.SingleShot(4.0, laukaiseNormalBullet11);
+        Timer.SingleShot(4.0, laukaiseNormalBullet2);
+        Timer.SingleShot(5.0, laukaiseNormalBullet9);
+        Timer.SingleShot(5.0, laukaiseNormalBullet14);
     }
 
     void hyokkays3()
     {
-
+        //rows
+        int valiLuku = RandomGen.NextInt(1, 6);
+        if (valiLuku == 1)
+        {
+            Timer.SingleShot(1.0, laukaiseNormalBullet1Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet2Nopea);
+            
+            Timer.SingleShot(1.0, laukaiseNormalBullet5Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet6Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet7Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet8Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet9Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet10Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet11Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet12Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet13Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet14Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet15Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+        }
+        if (valiLuku == 2)
+        {
+            Timer.SingleShot(1.0, laukaiseNormalBullet1Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet2Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet3Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet4Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet5Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet6Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet7Nopea);
+            
+            Timer.SingleShot(1.0, laukaiseNormalBullet10Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet11Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet12Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet13Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet14Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet15Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+        }
+        if (valiLuku == 3)
+        {
+            Timer.SingleShot(1.0, laukaiseNormalBullet1Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet2Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet3Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet4Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet5Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet6Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet7Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet8Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet9Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet10Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet11Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet12Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet13Nopea);
+            
+            Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+        }
+        if (valiLuku == 4)
+        {
+            Timer.SingleShot(1.0, laukaiseNormalBullet1Nopea);
+            
+            Timer.SingleShot(1.0, laukaiseNormalBullet4Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet5Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet6Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet7Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet8Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet9Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet10Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet11Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet12Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet13Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet14Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet15Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+        }
+        if (valiLuku == 5)
+        {
+            Timer.SingleShot(1.0, laukaiseNormalBullet1Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet2Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet3Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet4Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet5Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet6Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet7Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet8Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet9Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet10Nopea);
+            
+            Timer.SingleShot(1.0, laukaiseNormalBullet13Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet14Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet15Nopea);
+            Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+        }
+        
     }
 
     void hyokkays4()
@@ -276,4 +458,169 @@ public class BulletHell : PhysicsGame
     {
 
     }
+
+    void laukaiseNormalBullet1()
+    {
+        normalBullet1.IgnoresCollisionResponse = true;
+        Add(normalBullet1);
+        normalBullet1.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet2()
+    {
+        Add(normalBullet2);
+        normalBullet2.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet3()
+    {
+        Add(normalBullet3);
+        normalBullet3.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet4()
+    {
+        Add(normalBullet4);
+        normalBullet4.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet5()
+    {
+        Add(normalBullet5);
+        normalBullet5.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet6()
+    {
+        Add(normalBullet6);
+        normalBullet6.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet7()
+    {
+        Add(normalBullet7);
+        normalBullet7.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet8()
+    {
+        Add(normalBullet8);
+        normalBullet8.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet9()
+    {
+        Add(normalBullet9);
+        normalBullet9.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet10()
+    {
+        Add(normalBullet10);
+        normalBullet10.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet11()
+    {
+        Add(normalBullet11);
+        normalBullet11.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet12()
+    {
+        Add(normalBullet12);
+        normalBullet12.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet13()
+    {
+        Add(normalBullet13);
+        normalBullet13.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet14()
+    {
+        Add(normalBullet14);
+        normalBullet14.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet15()
+    {
+        Add(normalBullet15);
+        normalBullet15.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet16()
+    {
+        Add(normalBullet16);
+        normalBullet16.Move(luodinNopeusNormaali);
+    }
+    void laukaiseNormalBullet1Nopea()
+    {
+        normalBullet1.IgnoresCollisionResponse = true;
+        Add(normalBullet1);
+        normalBullet1.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet2Nopea()
+    {
+        Add(normalBullet2);
+        normalBullet2.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet3Nopea()
+    {
+        Add(normalBullet3);
+        normalBullet3.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet4Nopea()
+    {
+        Add(normalBullet4);
+        normalBullet4.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet5Nopea()
+    {
+        Add(normalBullet5);
+        normalBullet5.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet6Nopea()
+    {
+        Add(normalBullet6);
+        normalBullet6.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet7Nopea()
+    {
+        Add(normalBullet7);
+        normalBullet7.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet8Nopea()
+    {
+        Add(normalBullet8);
+        normalBullet8.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet9Nopea()
+    {
+        Add(normalBullet9);
+        normalBullet9.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet10Nopea()
+    {
+        Add(normalBullet10);
+        normalBullet10.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet11Nopea()
+    {
+        Add(normalBullet11);
+        normalBullet11.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet12Nopea()
+    {
+        Add(normalBullet12);
+        normalBullet12.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet13Nopea()
+    {
+        Add(normalBullet13);
+        normalBullet13.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet14Nopea()
+    {
+        Add(normalBullet14);
+        normalBullet14.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet15Nopea()
+    {
+        Add(normalBullet15);
+        normalBullet15.Move(luodinNopeusNopea);
+    }
+    void laukaiseNormalBullet16Nopea()
+    {
+        Add(normalBullet16);
+        normalBullet16.Move(luodinNopeusNopea);
+    }
+
+
 }
