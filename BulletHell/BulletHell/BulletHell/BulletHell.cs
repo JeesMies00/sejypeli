@@ -25,6 +25,7 @@ public class BulletHell : PhysicsGame
     PhysicsObject vihollinen;
     Timer luotiAjastin = new Timer();
     Timer damageKuvanAjastin = new Timer();
+    int pelaajanElama = 3;
     
     DoubleMeter elamalaskuri;
     PhysicsObject normalBullet1 = new PhysicsObject(20, 20);
@@ -45,6 +46,9 @@ public class BulletHell : PhysicsGame
     PhysicsObject normalBullet16 = new PhysicsObject(20, 20);
 
     PhysicsObject homingBullet = new PhysicsObject(200, 200);
+
+    PhysicsObject reuna;
+    
 
     Vector luodinNopeusNormaali = new Vector(-150, 0);
     Vector luodinNopeusNopea = new Vector(-300, 0);
@@ -90,22 +94,22 @@ public class BulletHell : PhysicsGame
         normalBullet14.X = 260;
         normalBullet15.X = 260;
         normalBullet16.X = 260;
-        normalBullet1.Y = Screen.Top - 300;
-        normalBullet2.Y = Screen.Top - 330;
-        normalBullet3.Y = Screen.Top - 360;
-        normalBullet4.Y = Screen.Top - 390;
-        normalBullet5.Y = Screen.Top - 420;
-        normalBullet6.Y = Screen.Top - 450;
-        normalBullet7.Y = Screen.Top - 480;
-        normalBullet8.Y = Screen.Top - 510;
-        normalBullet9.Y = Screen.Top - 540;
-        normalBullet10.Y = Screen.Top - 570;
-        normalBullet11.Y = Screen.Top - 600;
-        normalBullet12.Y = Screen.Top - 630;
-        normalBullet13.Y = Screen.Top - 660;
-        normalBullet14.Y = Screen.Top - 690;
-        normalBullet15.Y = Screen.Top - 720;
-        normalBullet16.Y = Screen.Top - 750;
+        normalBullet1.Y = 1000;
+        normalBullet2.Y = 1000;
+        normalBullet3.Y = 1000;
+        normalBullet4.Y = 1000;
+        normalBullet5.Y = 1000;
+        normalBullet6.Y = 1000;
+        normalBullet7.Y = 1000;
+        normalBullet8.Y = 1000;
+        normalBullet9.Y = 1000;
+        normalBullet10.Y = 1000;
+        normalBullet11.Y = 1000;
+        normalBullet12.Y = 1000;
+        normalBullet13.Y = 1000;
+        normalBullet14.Y = 1000;
+        normalBullet15.Y = 1000;
+        normalBullet16.Y = 1000;
         normalBullet1.Image = normalBulletKuva;
         normalBullet2.Image = normalBulletKuva;
         normalBullet3.Image = normalBulletKuva;
@@ -139,6 +143,25 @@ public class BulletHell : PhysicsGame
         normalBullet14.Tag = "luoti";
         normalBullet15.Tag = "luoti";
         normalBullet16.Tag = "luoti";
+        homingBullet.Tag = "luoti";
+
+        Add(normalBullet1);
+        Add(normalBullet2);
+        Add(normalBullet3);
+        Add(normalBullet4);
+        Add(normalBullet5);
+        Add(normalBullet6);
+        Add(normalBullet7);
+        Add(normalBullet8);
+        Add(normalBullet9);
+        Add(normalBullet10);
+        Add(normalBullet11);
+        Add(normalBullet12);
+        Add(normalBullet13);
+        Add(normalBullet14);
+        Add(normalBullet15);
+        Add(normalBullet16);
+
 
         homingBullet.X = 170;
         homingBullet.Y = 10;
@@ -147,10 +170,9 @@ public class BulletHell : PhysicsGame
         homingBullet.CanRotate = false;
         homingBullet.Brain = homingAivot;
         
-
         //teeHyokkays();
-        hyokkays1();
-        //hyokkays2();
+        //hyokkays1();
+        hyokkays2();
         //hyokkays3();
     }
 
@@ -163,6 +185,8 @@ public class BulletHell : PhysicsGame
         ruudut.SetTileMethod(Color.FromHexCode("#0026FF"), luoPelaaja);
         ruudut.SetTileMethod(Color.Red, luoVihollinen);
         ruudut.Execute(20, 20);
+        
+        AddCollisionHandler(pelaaja, "luoti", pelaajaOsuiLuotiin);
         
         Camera.ZoomToLevel();
         Level.Background.CreateStars();
@@ -184,10 +208,12 @@ public class BulletHell : PhysicsGame
 
     void luoReuna(Vector paikka, double leveys, double korkeus)
     {
-        PhysicsObject reuna = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        reuna = PhysicsObject.CreateStaticObject(leveys, korkeus);
         reuna.Position = paikka;
         reuna.Image = reunanKuva;
+        reuna.Tag = "reuna";
         Add(reuna);
+        AddCollisionHandler(reuna, "luoti", tuhoaLuoti);
     }
     void luoVihollinen(Vector paikka, double leveys, double korkeus)
     {
@@ -297,14 +323,51 @@ public class BulletHell : PhysicsGame
         vihollinen.Destroy();
     }
 
-    void tuhoaLuoti()
-    { 
-    
+    void tuhoaLuoti(PhysicsObject reuna, PhysicsObject kohde)
+    {
+        kohde.Destroy();
     }
 
+    void tuhoaHomingBullet()
+    {
+        homingBullet.Y = 1000;
+    }
+
+    void pelaajaOsuiLuotiin(PhysicsObject pelaaja, PhysicsObject kohde)
+    {
+        pelaajanElama = pelaajanElama - 1;
+        if (pelaajanElama == 0)
+        {
+            pelaaja.Destroy();
+            MultiSelectWindow gameOverValikko = new MultiSelectWindow("GAME OVER", "RETRY", "QUIT");
+            gameOverValikko.ItemSelected += painettiinValikonNappia;
+            Add(gameOverValikko);
+
+        }
+
+    }
+
+    void painettiinValikonNappia(int valinta)
+    {
+        switch (valinta)
+        {
+            case 0:
+                restart();
+                break;
+            case 1:
+                Exit();
+                break; 
+        }
+    }
+
+    void restart()
+    {
+        ClearAll();
+        Begin();
+    }
     void teeHyokkays()
     {
-        int hyokkaysLuku = RandomGen.NextInt(1, 6);
+        int hyokkaysLuku = RandomGen.NextInt(1, 4);
         if (hyokkaysLuku == 1)
         {
             hyokkays1();
@@ -325,12 +388,16 @@ public class BulletHell : PhysicsGame
         {
             hyokkays5();
         }
+
     }
 
     void hyokkays1()
     {
         Add(homingBullet);
+        Timer.SingleShot(7.0, tuhoaHomingBullet);
+        Timer.SingleShot(8.0, teeHyokkays);
     }
+    
 
     void hyokkays2()
     {
@@ -350,6 +417,7 @@ public class BulletHell : PhysicsGame
         Timer.SingleShot(4.0, laukaiseNormalBullet2);
         Timer.SingleShot(5.0, laukaiseNormalBullet9);
         Timer.SingleShot(5.0, laukaiseNormalBullet14);
+        Timer.SingleShot(8.0, teeHyokkays);
     }
 
     void hyokkays3()
@@ -445,8 +513,10 @@ public class BulletHell : PhysicsGame
             Timer.SingleShot(1.0, laukaiseNormalBullet14Nopea);
             Timer.SingleShot(1.0, laukaiseNormalBullet15Nopea);
             Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
+            
         }
-        
+
+        Timer.SingleShot(6.0, teeHyokkays);
     }
 
     void hyokkays4()
@@ -461,83 +531,82 @@ public class BulletHell : PhysicsGame
 
     void laukaiseNormalBullet1()
     {
-        normalBullet1.IgnoresCollisionResponse = true;
-        Add(normalBullet1);
+        normalBullet1.Y = Screen.Top - 300;
         normalBullet1.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet2()
     {
-        Add(normalBullet2);
+        normalBullet1.Y = Screen.Top - 330;
         normalBullet2.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet3()
     {
-        Add(normalBullet3);
+        normalBullet1.Y = Screen.Top - 360;
         normalBullet3.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet4()
     {
-        Add(normalBullet4);
+        normalBullet1.Y = Screen.Top - 390;
         normalBullet4.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet5()
     {
-        Add(normalBullet5);
+        normalBullet1.Y = Screen.Top - 420;
         normalBullet5.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet6()
     {
-        Add(normalBullet6);
+        normalBullet1.Y = Screen.Top - 450;
         normalBullet6.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet7()
     {
-        Add(normalBullet7);
+        normalBullet1.Y = Screen.Top - 480;
         normalBullet7.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet8()
     {
-        Add(normalBullet8);
+        normalBullet1.Y = Screen.Top - 510;
         normalBullet8.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet9()
     {
-        Add(normalBullet9);
+        normalBullet1.Y = Screen.Top - 540;
         normalBullet9.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet10()
     {
-        Add(normalBullet10);
+        normalBullet1.Y = Screen.Top - 570;
         normalBullet10.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet11()
     {
-        Add(normalBullet11);
+        normalBullet1.Y = Screen.Top - 600;
         normalBullet11.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet12()
     {
-        Add(normalBullet12);
+        normalBullet1.Y = Screen.Top - 630;
         normalBullet12.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet13()
     {
-        Add(normalBullet13);
+        normalBullet1.Y = Screen.Top - 660;
         normalBullet13.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet14()
     {
-        Add(normalBullet14);
+        normalBullet1.Y = Screen.Top - 690;
         normalBullet14.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet15()
     {
-        Add(normalBullet15);
+        normalBullet1.Y = Screen.Top - 720;
         normalBullet15.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet16()
     {
-        Add(normalBullet16);
+        normalBullet1.Y = Screen.Top - 750;
         normalBullet16.Move(luodinNopeusNormaali);
     }
     void laukaiseNormalBullet1Nopea()
