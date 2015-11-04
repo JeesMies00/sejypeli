@@ -11,6 +11,11 @@ public class BulletHell : PhysicsGame
     //PhysicsObject ammus = new PhysicsObject(10,10);
     PhysicsObject pelaaja = new PhysicsObject(30, 30);
     PhysicsObject bullet = new PhysicsObject(10, 10);
+    PhysicsObject heart1 = new PhysicsObject(50, 50);
+    PhysicsObject heart2 = new PhysicsObject(50, 50);
+    PhysicsObject heart3 = new PhysicsObject(50, 50);
+    PhysicsObject heart4 = new PhysicsObject(50, 50);
+    PhysicsObject heart5 = new PhysicsObject(50, 50);
     Vector oikealle = new Vector(300, 0);
     Vector vasemmalle = new Vector(-300, 0);
     Vector ylos = new Vector(0, 300);
@@ -25,11 +30,12 @@ public class BulletHell : PhysicsGame
     Image laserCharge = LoadImage("silmapallot(laser)");
     Image laser1kuva = LoadImage("laser");
     Image laser2kuva = LoadImage("laser2");
+    Image sydanKuva = LoadImage("heart");
     AssaultRifle pelaajanAse;
     PhysicsObject vihollinen;
     Timer luotiAjastin = new Timer();
     Timer damageKuvanAjastin = new Timer();
-    int pelaajanElama = 3;
+    int pelaajanElama = 5;
     int vihollisenKuvaLuku = 1;
     
     DoubleMeter elamalaskuri;
@@ -58,8 +64,10 @@ public class BulletHell : PhysicsGame
     PhysicsObject reuna;
     
 
-    Vector luodinNopeusNormaali = new Vector(-150, 0);
+    Vector luodinNopeusNormaali = new Vector(-190, 0);
     Vector luodinNopeusNopea = new Vector(-300, 0);
+    Vector luodinNopeusHeiluva1 = new Vector(-120, 60);
+    Vector luodinNopeusHeiluva2 = new Vector(-120, -60);
     TimeSpan luodinAika = new TimeSpan(100);
     
 
@@ -188,14 +196,39 @@ public class BulletHell : PhysicsGame
 
         Add(laser1);
         Add(laser2);
+
+        heart1.IgnoresCollisionResponse = true;
+        heart2.IgnoresCollisionResponse = true;
+        heart3.IgnoresCollisionResponse = true;
+        heart4.IgnoresCollisionResponse = true;
+        heart5.IgnoresCollisionResponse = true;
+        heart1.Image = sydanKuva;
+        heart2.Image = sydanKuva;
+        heart3.Image = sydanKuva;
+        heart4.Image = sydanKuva;
+        heart5.Image = sydanKuva;
+        heart1.Y = Screen.Bottom + 330;
+        heart2.Y = Screen.Bottom + 330;
+        heart3.Y = Screen.Bottom + 330;
+        heart4.Y = Screen.Bottom + 330;
+        heart5.Y = Screen.Bottom + 330;
+        heart1.X = -250;
+        heart2.X = -150;
+        heart3.X = -50;
+        heart4.X = 50;
+        heart5.X = 150;
+        Add(heart1);
+        Add(heart2);
+        Add(heart3);
+        Add(heart4);
+        Add(heart5);
         
-
-
         teeHyokkays();
         //hyokkays1();
         //hyokkays2();
         //hyokkays3();
         //hyokkays4();
+        //hyokkays5();
     }
 
 
@@ -344,6 +377,7 @@ public class BulletHell : PhysicsGame
         elamalaskuri.LowerLimit += tapaVihollinen;
         ProgressBar elamaPalkki = new ProgressBar(1200, 40);
         elamaPalkki.Y = Screen.Top - 80;
+        elamaPalkki.X = -85;
         elamaPalkki.Color = Color.Transparent;
         elamaPalkki.BarColor = Color.Blue;
         elamaPalkki.BorderColor = Color.White;
@@ -353,7 +387,10 @@ public class BulletHell : PhysicsGame
 
     void tapaVihollinen()
     {
-        vihollinen.Destroy();
+        Explosion rajahdys = new Explosion(500);
+        rajahdys.Position = vihollinen.Position;
+        Add(rajahdys);
+        Timer.SingleShot(0.5, vihollinen.Destroy);
     }
 
     void tuhoaLuoti(PhysicsObject reuna, PhysicsObject kohde)
@@ -369,8 +406,25 @@ public class BulletHell : PhysicsGame
     void pelaajaOsuiLuotiin(PhysicsObject pelaaja, PhysicsObject kohde)
     {
         pelaajanElama = pelaajanElama - 1;
+        if (pelaajanElama == 4)
+        {
+            heart1.Destroy();
+        }
+        if (pelaajanElama == 3)
+        {
+            heart2.Destroy();
+        }
+        if (pelaajanElama == 2)
+        {
+            heart3.Destroy();
+        }
+        if (pelaajanElama == 1)
+        {
+            heart4.Destroy();
+        }
         if (pelaajanElama == 0)
         {
+            heart5.Destroy();
             pelaaja.Destroy();
             MultiSelectWindow gameOverValikko = new MultiSelectWindow("GAME OVER", "QUIT");
             gameOverValikko.ItemSelected += painettiinValikonNappia;
@@ -404,7 +458,7 @@ public class BulletHell : PhysicsGame
 
     void teeHyokkays()
     {
-        int hyokkaysLuku = RandomGen.NextInt(1, 5);
+        int hyokkaysLuku = RandomGen.NextInt(1, 6);
         if (hyokkaysLuku == 1)
         {
             hyokkays1();
@@ -430,19 +484,22 @@ public class BulletHell : PhysicsGame
 
     void hyokkays1()
     {
+        //homing
+        pelaaja.IgnoresCollisionResponse = false;
         vihollinen.Image = homingCharge;
         vihollisenKuvaLuku = 2;
         Timer.SingleShot(1.0, luoHomingBullet);
         Timer.SingleShot(1.5, muutaVihollisenKuva);
         Timer.SingleShot(10.0, tuhoaHomingBullet);
-        Timer.SingleShot(10.0, muutaKuvaLukuTo1);
+        Timer.SingleShot(1.49999999, muutaKuvaLukuTo1);
         Timer.SingleShot(11.0, teeHyokkays);
+        pelaaja.IgnoresCollisionResponse = false;
     }
-    
 
     void hyokkays2()
     {
         //cluster
+        pelaaja.IgnoresCollisionResponse = false;
         Timer.SingleShot(1.0, laukaiseNormalBullet5);
         Timer.SingleShot(1.0, laukaiseNormalBullet10);
         Timer.SingleShot(2.0, laukaiseNormalBullet12);
@@ -458,12 +515,14 @@ public class BulletHell : PhysicsGame
         Timer.SingleShot(4.0, laukaiseNormalBullet2);
         Timer.SingleShot(5.0, laukaiseNormalBullet9);
         Timer.SingleShot(5.0, laukaiseNormalBullet14);
-        Timer.SingleShot(8.0, teeHyokkays);
+        Timer.SingleShot(5.8, teeHyokkays);
+        pelaaja.IgnoresCollisionResponse = false;
     }
 
     void hyokkays3()
     {
         //rows
+        pelaaja.IgnoresCollisionResponse = false;
         int valiLuku = RandomGen.NextInt(1, 6);
         if (valiLuku == 1)
         {
@@ -556,24 +615,147 @@ public class BulletHell : PhysicsGame
             Timer.SingleShot(1.0, laukaiseNormalBullet16Nopea);
             
         }
-
-        Timer.SingleShot(6.0, teeHyokkays);
+        pelaaja.IgnoresCollisionResponse = false;
+        Timer.SingleShot(1.5, teeHyokkays);
     }
 
     void hyokkays4()
     {
+        //laser
+        pelaaja.IgnoresCollisionResponse = false;
         vihollinen.Image = laserCharge;
         vihollisenKuvaLuku = 3;
-        Timer.SingleShot(2.0, luoLaserit);
-        Timer.SingleShot(4.0, muutaVihollisenKuva);
-        Timer.SingleShot(4.0, tuhoaLaserit);
-        Timer.SingleShot(4.0, muutaKuvaLukuTo1);
-        Timer.SingleShot(7.0, teeHyokkays);
+        Timer.SingleShot(1.5, luoLaserit);
+        Timer.SingleShot(2.49999999, muutaKuvaLukuTo1);
+        Timer.SingleShot(2.5, muutaVihollisenKuva);
+        Timer.SingleShot(2.5, tuhoaLaserit);
+        Timer.SingleShot(3.0, teeHyokkays);
+        pelaaja.IgnoresCollisionResponse = false;
     }
 
     void hyokkays5()
     {
+        //waves
+        pelaaja.IgnoresCollisionResponse = false;
+        Timer.SingleShot(0.9999999, laukaiseNormalBullet3);
+        Timer.SingleShot(1.0, laukaiseHeiluvaBullet31);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet32);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet31);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet32);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet31);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet32);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet31);
 
+        Timer.SingleShot(1.4999999, laukaiseNormalBullet5);
+        Timer.SingleShot(1.5, laukaiseHeiluvaBullet51);
+        Timer.SingleShot(2.5, laukaiseHeiluvaBullet52);
+        Timer.SingleShot(3.5, laukaiseHeiluvaBullet51);
+        Timer.SingleShot(4.5, laukaiseHeiluvaBullet52);
+        Timer.SingleShot(5.5, laukaiseHeiluvaBullet51);
+        Timer.SingleShot(6.5, laukaiseHeiluvaBullet52);
+        Timer.SingleShot(7.5, laukaiseHeiluvaBullet51);
+
+        Timer.SingleShot(0.9999999, laukaiseNormalBullet7);
+        Timer.SingleShot(1.0, laukaiseHeiluvaBullet71);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet72);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet71);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet72);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet71);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet72);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet71);
+
+        Timer.SingleShot(0.9999999, laukaiseNormalBullet11);
+        Timer.SingleShot(1.0, laukaiseHeiluvaBullet111);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet112);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet111);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet112);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet111);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet112);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet111);
+
+        Timer.SingleShot(0.9999999, laukaiseNormalBullet15);
+        Timer.SingleShot(1.0, laukaiseHeiluvaBullet151);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet152);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet151);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet152);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet151);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet152);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet151);
+
+        Timer.SingleShot(1.9999999, laukaiseNormalBullet6);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet61);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet62);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet61);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet62);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet61);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet62);
+        Timer.SingleShot(8.0, laukaiseHeiluvaBullet61);
+
+        Timer.SingleShot(2.4999999, laukaiseNormalBullet9);
+        Timer.SingleShot(2.5, laukaiseHeiluvaBullet91);
+        Timer.SingleShot(3.5, laukaiseHeiluvaBullet92);
+        Timer.SingleShot(4.5, laukaiseHeiluvaBullet91);
+        Timer.SingleShot(5.5, laukaiseHeiluvaBullet92);
+        Timer.SingleShot(6.5, laukaiseHeiluvaBullet91);
+        Timer.SingleShot(7.5, laukaiseHeiluvaBullet92);
+        Timer.SingleShot(8.5, laukaiseHeiluvaBullet91);
+
+        Timer.SingleShot(1.9999999, laukaiseNormalBullet12);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet121);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet122);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet121);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet122);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet121);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet122);
+        Timer.SingleShot(8.0, laukaiseHeiluvaBullet121);
+
+        Timer.SingleShot(2.4999999, laukaiseNormalBullet13);
+        Timer.SingleShot(2.5, laukaiseHeiluvaBullet131);
+        Timer.SingleShot(3.5, laukaiseHeiluvaBullet132);
+        Timer.SingleShot(4.5, laukaiseHeiluvaBullet131);
+        Timer.SingleShot(5.5, laukaiseHeiluvaBullet132);
+        Timer.SingleShot(6.5, laukaiseHeiluvaBullet131);
+        Timer.SingleShot(7.5, laukaiseHeiluvaBullet132);
+        Timer.SingleShot(8.5, laukaiseHeiluvaBullet131);
+
+        Timer.SingleShot(1.9999999, laukaiseNormalBullet4);
+        Timer.SingleShot(2.0, laukaiseHeiluvaBullet41);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet42);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet41);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet42);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet41);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet42);
+        Timer.SingleShot(8.0, laukaiseHeiluvaBullet41);
+
+        Timer.SingleShot(3.4999999, laukaiseNormalBullet8);
+        Timer.SingleShot(3.5, laukaiseHeiluvaBullet81);
+        Timer.SingleShot(4.5, laukaiseHeiluvaBullet82);
+        Timer.SingleShot(5.5, laukaiseHeiluvaBullet81);
+        Timer.SingleShot(6.5, laukaiseHeiluvaBullet82);
+        Timer.SingleShot(7.5, laukaiseHeiluvaBullet81);
+        Timer.SingleShot(8.5, laukaiseHeiluvaBullet82);
+        Timer.SingleShot(9.5, laukaiseHeiluvaBullet81);
+
+        Timer.SingleShot(2.9999999, laukaiseNormalBullet10);
+        Timer.SingleShot(3.0, laukaiseHeiluvaBullet101);
+        Timer.SingleShot(4.0, laukaiseHeiluvaBullet102);
+        Timer.SingleShot(5.0, laukaiseHeiluvaBullet101);
+        Timer.SingleShot(6.0, laukaiseHeiluvaBullet102);
+        Timer.SingleShot(7.0, laukaiseHeiluvaBullet101);
+        Timer.SingleShot(8.0, laukaiseHeiluvaBullet102);
+        Timer.SingleShot(9.0, laukaiseHeiluvaBullet101);
+
+        Timer.SingleShot(3.4999999, laukaiseNormalBullet14);
+        Timer.SingleShot(3.5, laukaiseHeiluvaBullet141);
+        Timer.SingleShot(4.5, laukaiseHeiluvaBullet142);
+        Timer.SingleShot(5.5, laukaiseHeiluvaBullet141);
+        Timer.SingleShot(6.5, laukaiseHeiluvaBullet142);
+        Timer.SingleShot(7.5, laukaiseHeiluvaBullet141);
+        Timer.SingleShot(8.5, laukaiseHeiluvaBullet142);
+        Timer.SingleShot(9.5, laukaiseHeiluvaBullet141);
+
+        pelaaja.IgnoresCollisionResponse = false;
+        Timer.SingleShot(6.0, teeHyokkays);
     }
 
     void laukaiseNormalBullet1()
@@ -785,5 +967,110 @@ public class BulletHell : PhysicsGame
         laser1.Y = 1000;
         laser2.Y = 1000;
     }
+    void laukaiseHeiluvaBullet31()
+    {
+        normalBullet3.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet41()
+    {
+        normalBullet4.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet51()
+    {
+        normalBullet5.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet61()
+    {
+        normalBullet6.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet71()
+    {
+        normalBullet7.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet81()
+    {
+        normalBullet8.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet91()
+    {
+        normalBullet9.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet101()
+    {
+        normalBullet10.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet111()
+    {
+        normalBullet11.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet121()
+    {
+        normalBullet12.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet131()
+    {
+        normalBullet13.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet141()
+    {
+        normalBullet14.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet151()
+    {
+        normalBullet15.Move(luodinNopeusHeiluva1);
+    }
+    void laukaiseHeiluvaBullet32()
+    {
+        normalBullet3.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet42()
+    {
+        normalBullet4.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet52()
+    {
+        normalBullet5.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet62()
+    {
+        normalBullet6.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet72()
+    {
+        normalBullet7.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet82()
+    {
+        normalBullet8.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet92()
+    {
+        normalBullet9.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet102()
+    {
+        normalBullet10.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet112()
+    {
+        normalBullet11.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet122()
+    {
+        normalBullet12.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet132()
+    {
+        normalBullet13.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet142()
+    {
+        normalBullet14.Move(luodinNopeusHeiluva2);
+    }
+    void laukaiseHeiluvaBullet152()
+    {
+        normalBullet15.Move(luodinNopeusHeiluva2);
+    }
+
 
 }
