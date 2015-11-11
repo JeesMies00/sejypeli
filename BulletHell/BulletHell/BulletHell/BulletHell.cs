@@ -9,34 +9,37 @@ using Jypeli.Widgets;
 public class BulletHell : PhysicsGame
 {
     //PhysicsObject ammus = new PhysicsObject(10,10);
-    PhysicsObject pelaaja = new PhysicsObject(30, 30);
-    PhysicsObject bullet = new PhysicsObject(10, 10);
-    PhysicsObject heart1 = new PhysicsObject(50, 50);
-    PhysicsObject heart2 = new PhysicsObject(50, 50);
-    PhysicsObject heart3 = new PhysicsObject(50, 50);
-    PhysicsObject heart4 = new PhysicsObject(50, 50);
-    PhysicsObject heart5 = new PhysicsObject(50, 50);
+    PhysicsObject pelaaja = PhysicsObject.CreateStaticObject(30, 30);
+    PhysicsObject bullet = PhysicsObject.CreateStaticObject(10, 10);
+    PhysicsObject heart1 = PhysicsObject.CreateStaticObject(50, 50);
+    PhysicsObject heart2 = PhysicsObject.CreateStaticObject(50, 50);
+    PhysicsObject heart3 = PhysicsObject.CreateStaticObject(50, 50);
+    PhysicsObject heart4 = PhysicsObject.CreateStaticObject(50, 50);
+    PhysicsObject heart5 = PhysicsObject.CreateStaticObject(50, 50);
     Vector oikealle = new Vector(300, 0);
     Vector vasemmalle = new Vector(-300, 0);
     Vector ylos = new Vector(0, 300);
     Vector alas = new Vector(0, -300);
     Image pelaajanKuva = LoadImage("alus");
+    Image pelaajaKuolematon = LoadImage("alus(suojattu)");
     Image reunanKuva = LoadImage("reuna");
-    Image vihollisenKuva = LoadImage("silmapallot");
-    Image damageKuva = LoadImage("silmapallot(damaged)");
+    Image vihollisenKuva = LoadImage("paholainen");
+    Image damageKuva = LoadImage("paholainen(damaged)");
     Image normalBulletKuva = LoadImage("normalBullet");
     Image homingBulletKuva = LoadImage("homingBullet");
-    Image homingCharge = LoadImage("silmapallot(homing)");
-    Image laserCharge = LoadImage("silmapallot(laser)");
-    Image laser1kuva = LoadImage("laser");
-    Image laser2kuva = LoadImage("laser2");
+    Image homingCharge = LoadImage("paholainen(homing)");
+    Image laserCharge = LoadImage("paholainen(laser)");
+    Image laser1kuva = LoadImage("laser(paholainen)");
+    Image laser2kuva = LoadImage("laser2(paholainen)");
     Image sydanKuva = LoadImage("heart");
     AssaultRifle pelaajanAse;
     PhysicsObject vihollinen;
     Timer luotiAjastin = new Timer();
     Timer damageKuvanAjastin = new Timer();
     int pelaajanElama = 5;
+    int pelaajanKuolemattomuusLuku = 0;
     int vihollisenKuvaLuku = 1;
+    int onkoVihollinenElossa = 1;
     
     DoubleMeter elamalaskuri;
     PhysicsObject normalBullet1 = new PhysicsObject(20, 20);
@@ -162,6 +165,7 @@ public class BulletHell : PhysicsGame
         homingBullet.Tag = "luoti";
         laser1.Tag = "luoti";
         laser2.Tag = "luoti";
+        reuna.Tag = "reuna";
 
         Add(normalBullet1);
         Add(normalBullet2);
@@ -266,7 +270,6 @@ public class BulletHell : PhysicsGame
         reuna = PhysicsObject.CreateStaticObject(leveys, korkeus);
         reuna.Position = paikka;
         reuna.Image = reunanKuva;
-        reuna.Tag = "reuna";
         Add(reuna);
         AddCollisionHandler(reuna, "luoti", tuhoaLuoti);
     }
@@ -387,6 +390,7 @@ public class BulletHell : PhysicsGame
 
     void tapaVihollinen()
     {
+        onkoVihollinenElossa = 0;
         Explosion rajahdys = new Explosion(500);
         rajahdys.Position = vihollinen.Position;
         Add(rajahdys);
@@ -405,33 +409,44 @@ public class BulletHell : PhysicsGame
 
     void pelaajaOsuiLuotiin(PhysicsObject pelaaja, PhysicsObject kohde)
     {
-        pelaajanElama = pelaajanElama - 1;
-        if (pelaajanElama == 4)
+        if (pelaajanKuolemattomuusLuku == 0)
         {
-            heart1.Destroy();
-        }
-        if (pelaajanElama == 3)
-        {
-            heart2.Destroy();
-        }
-        if (pelaajanElama == 2)
-        {
-            heart3.Destroy();
-        }
-        if (pelaajanElama == 1)
-        {
-            heart4.Destroy();
-        }
-        if (pelaajanElama == 0)
-        {
-            heart5.Destroy();
-            pelaaja.Destroy();
-            MultiSelectWindow gameOverValikko = new MultiSelectWindow("GAME OVER", "QUIT");
-            gameOverValikko.ItemSelected += painettiinValikonNappia;
-            Add(gameOverValikko);
+            pelaajanElama = pelaajanElama - 1;
+            pelaaja.Image = pelaajaKuolematon;
+            pelaajanKuolemattomuusLuku = 1;
+            Timer.SingleShot(1.0, palautaPelaajanKuolevuus);
+            if (pelaajanElama == 4)
+            {
+                heart1.Destroy();
+            }
+            if (pelaajanElama == 3)
+            {
+                heart2.Destroy();
+            }
+            if (pelaajanElama == 2)
+            {
+                heart3.Destroy();
+            }
+            if (pelaajanElama == 1)
+            {
+                heart4.Destroy();
+            }
+            if (pelaajanElama == 0)
+            {
+                heart5.Destroy();
+                pelaaja.Destroy();
+                MultiSelectWindow gameOverValikko = new MultiSelectWindow("GAME OVER", "QUIT");
+                gameOverValikko.ItemSelected += painettiinValikonNappia;
+                Add(gameOverValikko);
 
+            }
         }
 
+    }
+    void palautaPelaajanKuolevuus()
+    {
+        pelaajanKuolemattomuusLuku = 0;
+        pelaaja.Image = pelaajanKuva;
     }
 
     void painettiinValikonNappia(int valinta)
@@ -458,26 +473,29 @@ public class BulletHell : PhysicsGame
 
     void teeHyokkays()
     {
-        int hyokkaysLuku = RandomGen.NextInt(1, 6);
-        if (hyokkaysLuku == 1)
+        if (onkoVihollinenElossa == 1)
         {
-            hyokkays1();
-        }
-        if (hyokkaysLuku == 2)
-        {
-            hyokkays2();
-        }
-        if (hyokkaysLuku == 3)
-        {
-            hyokkays3();
-        }
-        if (hyokkaysLuku == 4)
-        {
-            hyokkays4();
-        }
-        if (hyokkaysLuku == 5)
-        {
-            hyokkays5();
+            int hyokkaysLuku = RandomGen.NextInt(1, 6);
+            if (hyokkaysLuku == 1)
+            {
+                hyokkays1();
+            }
+            if (hyokkaysLuku == 2)
+            {
+                hyokkays2();
+            }
+            if (hyokkaysLuku == 3)
+            {
+                hyokkays3();
+            }
+            if (hyokkaysLuku == 4)
+            {
+                hyokkays4();
+            }
+            if (hyokkaysLuku == 5)
+            {
+                hyokkays5();
+            }
         }
 
     }
@@ -489,9 +507,9 @@ public class BulletHell : PhysicsGame
         vihollinen.Image = homingCharge;
         vihollisenKuvaLuku = 2;
         Timer.SingleShot(1.0, luoHomingBullet);
-        Timer.SingleShot(1.5, muutaVihollisenKuva);
         Timer.SingleShot(10.0, tuhoaHomingBullet);
-        Timer.SingleShot(1.49999999, muutaKuvaLukuTo1);
+        Timer.SingleShot(10.0, muutaKuvaLukuTo1);
+        Timer.SingleShot(10.0, muutaVihollisenKuva);
         Timer.SingleShot(11.0, teeHyokkays);
         pelaaja.IgnoresCollisionResponse = false;
     }
