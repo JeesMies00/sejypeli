@@ -8,14 +8,15 @@ using Jypeli.Widgets;
 
 public class BulletHell : PhysicsGame
 {
-    //PhysicsObject ammus = new PhysicsObject(10,10);
-    PhysicsObject pelaaja = PhysicsObject.CreateStaticObject(30, 30);
+    PhysicsObject pelaaja = new PhysicsObject(30, 30);
     PhysicsObject bullet = PhysicsObject.CreateStaticObject(10, 10);
     PhysicsObject heart1 = PhysicsObject.CreateStaticObject(50, 50);
     PhysicsObject heart2 = PhysicsObject.CreateStaticObject(50, 50);
     PhysicsObject heart3 = PhysicsObject.CreateStaticObject(50, 50);
     PhysicsObject heart4 = PhysicsObject.CreateStaticObject(50, 50);
     PhysicsObject heart5 = PhysicsObject.CreateStaticObject(50, 50);
+    PhysicsObject blackHole1= PhysicsObject.CreateStaticObject(90, 90);
+    PhysicsObject blackHole2 = PhysicsObject.CreateStaticObject(90, 90);
     Vector oikealle = new Vector(300, 0);
     Vector vasemmalle = new Vector(-300, 0);
     Vector ylos = new Vector(0, 300);
@@ -32,6 +33,8 @@ public class BulletHell : PhysicsGame
     Image laser1kuva = LoadImage("laser(paholainen)");
     Image laser2kuva = LoadImage("laser2(paholainen)");
     Image sydanKuva = LoadImage("heart");
+    Image mustaAukkoKuva = LoadImage("blackhole");
+    SoundEffect aseenAani = LoadSoundEffect("laserSound");
     AssaultRifle pelaajanAse;
     PhysicsObject vihollinen;
     Timer luotiAjastin = new Timer();
@@ -72,7 +75,8 @@ public class BulletHell : PhysicsGame
     Vector luodinNopeusHeiluva1 = new Vector(-120, 60);
     Vector luodinNopeusHeiluva2 = new Vector(-120, -60);
     TimeSpan luodinAika = new TimeSpan(100);
-    
+
+    FollowerBrain mustaAukkoAivot = new FollowerBrain("mustaAukko");
 
     public override void Begin()
     {
@@ -94,7 +98,6 @@ public class BulletHell : PhysicsGame
         Keyboard.Listen(Key.Enter, ButtonState.Down, ammu, "Ammu", pelaajanAse);
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-
 
 
         normalBullet1.X = 260;
@@ -226,13 +229,34 @@ public class BulletHell : PhysicsGame
         Add(heart3);
         Add(heart4);
         Add(heart5);
+
+        blackHole1.Shape = Shape.Circle;
+        blackHole2.Shape = Shape.Circle;
+        blackHole1.X = -300;
+        blackHole1.Y = 1000;
+        blackHole2.X = 200;
+        blackHole2.Y = 1000;
+        blackHole1.Tag = "mustaAukko";
+        blackHole2.Tag = "mustaAukko";
+        blackHole1.IgnoresCollisionResponse = true;
+        blackHole2.IgnoresCollisionResponse = true;
+        blackHole1.Image = mustaAukkoKuva;
+        blackHole2.Image = mustaAukkoKuva;
+
+        mustaAukkoAivot.Speed = 150;
+        mustaAukkoAivot.Active = false;
+
+        Add(blackHole1);
+        Add(blackHole2);
+
         
-        teeHyokkays();
+        //teeHyokkays();
         //hyokkays1();
         //hyokkays2();
         //hyokkays3();
         //hyokkays4();
         //hyokkays5();
+        hyokkays6();
     }
 
 
@@ -246,6 +270,8 @@ public class BulletHell : PhysicsGame
         ruudut.Execute(20, 20);
         
         AddCollisionHandler(pelaaja, "luoti", pelaajaOsuiLuotiin);
+        AddCollisionHandler(pelaaja, "vihollinen", pelaajaOsuiLuotiin);
+        AddCollisionHandler(pelaaja, "mustaAukko", pelaajaOsuiLuotiin);
         
         Camera.ZoomToLevel();
         Level.Background.CreateStars();
@@ -257,8 +283,11 @@ public class BulletHell : PhysicsGame
         pelaaja.Image = pelaajanKuva;
         pelaaja.CanRotate = false;
         pelaaja.Restitution = 0;
+        pelaaja.IgnoresCollisionResponse = true;
         pelaaja.Position = paikka;
+        pelaaja.Brain = mustaAukkoAivot;
         pelaajanAse = new AssaultRifle(0.01, 0.01);
+        pelaajanAse.AttackSound = aseenAani;
         pelaajanAse.ProjectileCollision = AmmusOsui;
         pelaaja.Add(pelaajanAse);
         Add(pelaaja);
@@ -306,6 +335,10 @@ public class BulletHell : PhysicsGame
         {
             Add(ammus);
             ammus.IgnoresCollisionResponse = true;
+            blackHole2.IgnoresCollisionWith(ammus);
+            blackHole1.IgnoresCollisionWith(ammus);
+            laser2.IgnoresCollisionWith(ammus);
+            laser1.IgnoresCollisionWith(ammus);
             homingBullet.IgnoresCollisionWith(ammus);
             ammus.IgnoresCollisionWith(homingBullet);
             normalBullet1.IgnoresCollisionWith(ammus);
@@ -475,7 +508,7 @@ public class BulletHell : PhysicsGame
     {
         if (onkoVihollinenElossa == 1)
         {
-            int hyokkaysLuku = RandomGen.NextInt(1, 6);
+            int hyokkaysLuku = RandomGen.NextInt(1, 9);
             if (hyokkaysLuku == 1)
             {
                 hyokkays1();
@@ -496,6 +529,18 @@ public class BulletHell : PhysicsGame
             {
                 hyokkays5();
             }
+            if (hyokkaysLuku == 6)
+            {
+                hyokkays6();
+            }
+            if (hyokkaysLuku == 7)
+            {
+                hyokkays6();
+            }
+            if (hyokkaysLuku == 8)
+            {
+                hyokkays6();
+            }
         }
 
     }
@@ -510,7 +555,7 @@ public class BulletHell : PhysicsGame
         Timer.SingleShot(10.0, tuhoaHomingBullet);
         Timer.SingleShot(10.0, muutaKuvaLukuTo1);
         Timer.SingleShot(10.0, muutaVihollisenKuva);
-        Timer.SingleShot(11.0, teeHyokkays);
+        Timer.SingleShot(10.5, teeHyokkays);
         pelaaja.IgnoresCollisionResponse = false;
     }
 
@@ -643,11 +688,11 @@ public class BulletHell : PhysicsGame
         pelaaja.IgnoresCollisionResponse = false;
         vihollinen.Image = laserCharge;
         vihollisenKuvaLuku = 3;
-        Timer.SingleShot(1.5, luoLaserit);
-        Timer.SingleShot(2.49999999, muutaKuvaLukuTo1);
-        Timer.SingleShot(2.5, muutaVihollisenKuva);
-        Timer.SingleShot(2.5, tuhoaLaserit);
-        Timer.SingleShot(3.0, teeHyokkays);
+        Timer.SingleShot(1.0, luoLaserit);
+        Timer.SingleShot(1.9999999, muutaKuvaLukuTo1);
+        Timer.SingleShot(2.0, muutaVihollisenKuva);
+        Timer.SingleShot(2.0, tuhoaLaserit);
+        Timer.SingleShot(2.5, teeHyokkays);
         pelaaja.IgnoresCollisionResponse = false;
     }
 
@@ -774,6 +819,20 @@ public class BulletHell : PhysicsGame
 
         pelaaja.IgnoresCollisionResponse = false;
         Timer.SingleShot(6.0, teeHyokkays);
+    }
+
+    void hyokkays6()
+    {
+        int mustaAukkoLuku = RandomGen.NextInt(1, 3);
+        if (mustaAukkoLuku == 1)
+        {
+            luoMustaAukko1();
+        }
+        if (mustaAukkoLuku == 2)
+        {
+            luoMustaAukko2();
+        }
+        Timer.SingleShot(0.5, teeHyokkays);
     }
 
     void laukaiseNormalBullet1()
@@ -984,6 +1043,26 @@ public class BulletHell : PhysicsGame
     {
         laser1.Y = 1000;
         laser2.Y = 1000;
+    }
+    void luoMustaAukko1()
+    {
+        blackHole1.Y = 100;
+        mustaAukkoAivot.Active = true;
+        Timer.SingleShot(6.0, poistaMustatAukot);
+        
+    }
+    void luoMustaAukko2()
+    {
+        blackHole2.Y = -100;
+        mustaAukkoAivot.Active = true;
+        Timer.SingleShot(6.0, poistaMustatAukot);
+
+    }
+    void poistaMustatAukot()
+    {
+        mustaAukkoAivot.Active = false;
+        blackHole1.Y = 1000;
+        blackHole2.Y = 1000;
     }
     void laukaiseHeiluvaBullet31()
     {
