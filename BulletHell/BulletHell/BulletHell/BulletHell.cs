@@ -71,7 +71,7 @@ public class BulletHell : PhysicsGame
     
 
     Vector luodinNopeusNormaali = new Vector(-190, 0);
-    Vector luodinNopeusNopea = new Vector(-300, 0);
+    Vector luodinNopeusNopea = new Vector(-285, 0);
     Vector luodinNopeusHeiluva1 = new Vector(-120, 60);
     Vector luodinNopeusHeiluva2 = new Vector(-120, -60);
     TimeSpan luodinAika = new TimeSpan(100);
@@ -249,14 +249,14 @@ public class BulletHell : PhysicsGame
         Add(blackHole1);
         Add(blackHole2);
 
-        
+        teeHyokkaysIlmanMustaaAukkoa();
         //teeHyokkays();
         //hyokkays1();
         //hyokkays2();
         //hyokkays3();
         //hyokkays4();
         //hyokkays5();
-        hyokkays6();
+        //hyokkays6();
     }
 
 
@@ -424,12 +424,19 @@ public class BulletHell : PhysicsGame
     void tapaVihollinen()
     {
         onkoVihollinenElossa = 0;
+        pelaajanKuolemattomuusLuku = 1;
         Explosion rajahdys = new Explosion(500);
         rajahdys.Position = vihollinen.Position;
         Add(rajahdys);
         Timer.SingleShot(0.5, vihollinen.Destroy);
+        Timer.SingleShot(2.0, luoGameOverValikko2);
     }
-
+    void luoGameOverValikko2()
+    {
+        MultiSelectWindow gameOverValikko2 = new MultiSelectWindow("YOU WON!", "QUIT");
+        gameOverValikko2.ItemSelected += painettiinValikonNappia;
+        Add(gameOverValikko2);
+    }
     void tuhoaLuoti(PhysicsObject reuna, PhysicsObject kohde)
     {
         kohde.Y = 1000;
@@ -540,6 +547,33 @@ public class BulletHell : PhysicsGame
             if (hyokkaysLuku == 8)
             {
                 hyokkays6();
+            }
+        }
+    }
+        void teeHyokkaysIlmanMustaaAukkoa()
+    {
+        if (onkoVihollinenElossa == 1)
+        {
+            int hyokkaysLuku = RandomGen.NextInt(1, 6);
+            if (hyokkaysLuku == 1)
+            {
+                hyokkays1();
+            }
+            if (hyokkaysLuku == 2)
+            {
+                hyokkays2();
+            }
+            if (hyokkaysLuku == 3)
+            {
+                hyokkays3();
+            }
+            if (hyokkaysLuku == 4)
+            {
+                hyokkays4();
+            }
+            if (hyokkaysLuku == 5)
+            {
+                hyokkays5();
             }
         }
 
